@@ -1,8 +1,10 @@
 import numpy as np
 import torch
 from . import screen
+from . import model as mdl
 
 class forest():
+    __DEBUG = True
     # the condition the blob has to meet to win the game
     victory_condition = False
     loss_condition = False
@@ -33,8 +35,12 @@ class forest():
     
     
     #initializing the game requires giving it a model to play with
-    def __init__(self, model):
-        self.blob = model
+    def __init__(self, params, path=None):
+        self.blob = mdl.ferret()
+        if path==None:
+            self.blob.create(params[0], params[1], params[2], params[3], params[4], params[5])
+        else:
+            self.blob.load(path)
         self.width = self.blob.width
         self.height = self.blob.height
         self.__create_starting_screen()
@@ -143,13 +149,17 @@ class forest():
         # decide on the action to take based on the input and 
         # convert that to an appropriate action for this game
         x, y = 0, 0
-        if action[0]:
+        if action[0] == 1:
+            if self.__DEBUG: print("right 1")
             x += 1 
-        if action[1]:
+        if action[1] == 1:
+            if self.__DEBUG: print("left 1")
             x += -1
-        if action[2]:
+        if action[2] == 1:
+            if self.__DEBUG: print("up 1")
             y += 1
-        if action[3]:
+        if action[3] == 1:
+            if self.__DEBUG: print("down 1")
             y += -1
         return x, y
     
@@ -187,7 +197,7 @@ class forest():
         max_iter = 1000
 
         # the previous action taken
-        prev = 0
+        prev = torch.zeros(self.blob.num_controls).to(dtype=torch.float64, device=self.blob.device)
         # how many times the previous action has been the same as the current one
         combo = 0
         # how many times we'll allow it to combo the same action in a row
@@ -202,12 +212,13 @@ class forest():
         # play the game until victory or until either combo gets too high or iterations finish
         while ((self.victory_condition == False) & (self.loss_condition == False)):
             act = self.blob.update(self.game_screen)
-            if prev == act:
+            if torch.equal(act, prev):
                 combo += 1
             else:
                 combo = 0
             
             if combo > max_combo:
+                if self.__DEBUG: print("combo break")
                 break
 
             prev = act
@@ -218,16 +229,21 @@ class forest():
             x = np.abs(x - self.victory_x)
             y = np.abs(y - self.victory_y)
             if (x < prev_x):
-                self.blob.train(0, 255, True)
+                if self.__DEBUG: print("sense 0 positive sent")
+                self.blob.sense(0, 255, True)
             if ( x > prev_x):
-                self.blob.train(0, 255, False)
+                if self.__DEBUG: print("sense 0 negative sent")
+                self.blob.sense(0, 255, False)
             if (y < prev_y):
-                self.blob.train(1, 255, True)
+                if self.__DEBUG: print("sense 1 positive sent")
+                self.blob.sense(1, 255, True)
             if (y > prev_y):
-                self.blob.train(1, 255, False)
+                if self.__DEBUG: print("sense 1 negative sent")
+                self.blob.sense(1, 255, False)
                 
             if (self.__check_close_to_tree(self.player_location_x, self.player_location_y) == True):
-                self.blob.train(2, 1000, False)
+                if self.__DEBUG: print("sense 2 negative sent")
+                self.blob.sense(2, 1000, False)
             
             if (x + y < self.min_dx + self.min_dy):
                 self.min_dx = x
@@ -248,11 +264,11 @@ class forest():
 
         # otherwise we lose, and just do nothing with it.
         if (self.victory_condition == True):
-            print("victory! it took this many turns:")
-            print(iter)
+            if self.__DEBUG: print("victory! it took this many turns:")
+            if self.__DEBUG: print(iter)
             return True
         else:
-            print("defeat! after this many turns:")
-            print(iter)
+            if self.__DEBUG: print("defeat! after this many turns:")
+            if self.__DEBUG: print(iter)
             #screen.save(self.game_screen, 'end_screen')
         return False
