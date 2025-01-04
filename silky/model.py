@@ -342,13 +342,20 @@ class ferret():
         '''
         degree = 1 / fraction
         model = ferret()
-        model.copy(self)
+        model.width = self.width
+        model.height = self.height
+        model.depth = self.depth
+        model.bounds = self.bounds
+        model.range_high = self.range_high
+        model.range_low = self.range_low
+        model.num_controls = self.num_controls
+        model.controls = self.controls
         model.__new_thresholds()
         model.__new_propensity()
         torch.divide(model.thresholds_pos, fraction, out=model.thresholds_pos)
         torch.divide(model.thresholds_neg, fraction, out=model.thresholds_neg)
-        torch.divide(self.thresholds_pos, degree + 1, out=self.thresholds_pos)
-        torch.divide(self.thresholds_neg, degree + 1, out=self.thresholds_neg)
+        torch.add(self.thresholds_pos, model.thresholds_pos, out=self.thresholds_pos)
+        torch.add(self.thresholds_neg, model.thresholds_neg, out=self.thresholds_neg)
         for i in range(29, 61):
             temp = torch.tensor(data=1, device=self.device)
             random_gen = torch.Generator(device=self.device)
