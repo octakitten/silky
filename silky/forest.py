@@ -182,11 +182,10 @@ class forest():
         screen.screen.save(self.game_screen, 'start_screen')
         return
     
-    def restart(self, new_model_version):
+    def restart(self):
         self.loss_condition = False
         self.victory_condition = False
         self.__choose_starting_location()
-        self.blob = new_model_version
         return
     
     # runs the game
