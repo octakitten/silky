@@ -35,11 +35,11 @@ class forest():
     
     
     #initializing the game requires giving it a model to play with
-    def __init__(self, params, path=None):
-        self.blob = mdl.ferret()
+    def __init__(self, model, path=None):
         if path==None:
-            self.blob.create(params[0], params[1], params[2], params[3], params[4], params[5])
+            self.blob = model
         else:
+            self.blob = mdl.ferret()
             self.blob.load(path)
         self.width = self.blob.width
         self.height = self.blob.height
@@ -181,10 +181,11 @@ class forest():
         screen.screen.save(self.game_screen, 'start_screen')
         return
     
-    def restart(self):
+    def restart(self, new_model_version):
         self.loss_condition = False
         self.victory_condition = False
         self.__choose_starting_location()
+        self.blob = new_model_version
         return
     
     # runs the game

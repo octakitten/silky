@@ -344,7 +344,7 @@ def run_hamster():
         while (True):
               permute_degree = 2
               if (first_game_attempt == False):
-                    game.restart()
+                    game.restart(model)
               if (game.play_game() == False):
                     iters+=1
                     print('game over! number of attempts so far:')
