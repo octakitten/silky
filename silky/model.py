@@ -746,7 +746,7 @@ class hamster():
         self.control_thresholds_pos = torch.load(path + '/control_thresholds_pos.pth')
         self.control_thresholds_neg = torch.load(path + '/control_thresholds_neg.pth')
         for i in range(0, 61):
-            self.layers.append(torch.load(path + '/layer' + str(i) + '.pth'))
+            self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
         return
         
     def __new_thresholds(self):
