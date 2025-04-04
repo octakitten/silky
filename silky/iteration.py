@@ -248,11 +248,11 @@ def run_ferret_forest():
         if (os.path.exists(vic_path) & first_attempt):
             try:
                 print('loading model from disk... ')
-                game = forest.forest(params, path=pth)
+                game = forest.forest(params, path=vic_path)
             except:
                 print('unable to load a winning model...')
                 try:
-                    game = forest.forest(params, path=pth)
+                    game = forest.forest(params, path=prog_path)
                     print('loading an in-progress model from disk...')
                 except:
                     print('unable to load an in-progress model')
@@ -260,7 +260,7 @@ def run_ferret_forest():
                     game = forest.forest(params)
         elif (os.path.exists(prog_path) & first_attempt):
             try:
-                game = forest.forest(params, path=pth)
+                game = forest.forest(params, path=prog_path)
                 print('loading an in-progress model from disk...')
             except:
                 print('unable to load an in-progress model')
