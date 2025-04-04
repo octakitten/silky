@@ -122,7 +122,7 @@ class ferret():
             self.layers.append(torch.load(path + '/layer' + str(i) + '.pth'))
         
         for i in range(0, 8):
-            self.firing = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
+            self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
 
         return
         
@@ -155,7 +155,7 @@ class ferret():
         for i in range(0, len(model.layers)):
             self.layers.append(model.layers[i])
         for i in range(0, 8):
-            self.firing = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
+            self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
         
         return
     
@@ -264,7 +264,7 @@ class ferret():
             self.layers[i] = torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16)
         
         for i in range(0, 8):
-            self.firing = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
+            self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
         return
     
     def __new_propensity(self):
