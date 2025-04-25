@@ -119,7 +119,9 @@ class ferret():
         self.thresholds_pos = torch.load(path + '/thresholds_pos.pth')
         self.thresholds_neg = torch.load(path + '/thresholds_neg.pth')
         for i in range(0, len(self.layers)):
-            self.layers.append(torch.load(path + '/layer' + str(i) + '.pth'))
+            dummy = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
+            dummy = torch.load(path + '/layer' + str(i) + '.pth')
+            self.layers.append(dummy)
         
         for i in range(0, 8):
             self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
@@ -408,6 +410,7 @@ class ferret():
             torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
         elif input_tensor.ndim == 2:
             torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
+            torch.add(self.layers[0][:, :, 1],  input_tensor, out=self.layers[0][:, :, 1])
         else:
             print("Unexpected number of input tensor dimensions!")
 
@@ -746,6 +749,7 @@ class hamster():
         self.control_thresholds_pos = torch.load(path + '/control_thresholds_pos.pth')
         self.control_thresholds_neg = torch.load(path + '/control_thresholds_neg.pth')
         for i in range(0, 61):
+
             self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
         return
         
