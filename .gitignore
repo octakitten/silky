@@ -167,6 +167,7 @@ end_screen
 victory_condition
 saved_models/
 .venv/
+.venv2/
 __pychache__/
 src_old/
 tests_old/
@@ -180,3 +181,12 @@ test_dir/
 indev-tests/
 tests/testing_stuff.py
 test/testingstuff2.py
+custom.py
+default/
+dist_beta/
+ferret_forest/
+saves/
+silky/testit.py
+test2.py
+test2.sh
+testing01/
