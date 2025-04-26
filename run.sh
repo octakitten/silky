@@ -1,4 +1,8 @@
 #!/bin/bash
+build.sh
+
+
+
 source ./.venv/bin/activate
 #today=$( date +%Y%m&d )
 printf -v today '%(%Y%m%d)T' -1

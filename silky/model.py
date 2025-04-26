@@ -37,8 +37,8 @@ class ferret():
     # array of those neurons
     sensations = []
 
-    layers = [1] * 61
-    firing = [0] * 9
+    layers = []
+    firing = []
 
     # range of propensity to fire for personality layers
     pos_propensity = 0
@@ -259,14 +259,14 @@ class ferret():
         the negative layers we divide by n and subtract from 1. This will give us the desired range of values for the personality layers.
         '''
         for i in range(0, 61):
-            self.layers[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
+            self.layers.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         for i in range(29, 61):
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
-            self.layers[i] = torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16)
+            self.layers.append(torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16))
         
         for i in range(0, 8):
-            self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
+            self.firing.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         return
     
     def __new_propensity(self):
@@ -428,14 +428,14 @@ class ferret():
         #self.neg_fire_amt = torch.div(self.neg_fire_amt, 6).to(dtype=torch.int16)
 
         # use the firing multipliers to change the output values of the firing neurons
-        torch.add(self.firing[0], self.layers[3], out=self.firing[7])
-        torch.sub(self.firing[2], self.layers[4], out=self.firing[8])
+        torch.add(self.firing[0], self.layers[3], out=self.firing[6])
+        torch.sub(self.firing[2], self.layers[4], out=self.firing[7])
 
         # apply the firing values to each of the near neighbors
         temp = torch.zeros(size=(self.width, self.height, self.depth), device=self.device, dtype=torch.int16)
         for i in range(0, 4):
-            torch.add(self.layers[0], torch.roll(self.firing[7], (-1 ** i), int(i/2)), out=temp)
-            torch.sub(self.layers[0], torch.roll(self.firing[8], (-1 ** i), int(i/2)), out=temp)
+            torch.add(self.layers[0], torch.roll(self.firing[6], (-1 ** i), int(i/2)), out=temp)
+            torch.sub(self.layers[0], torch.roll(self.firing[7], (-1 ** i), int(i/2)), out=temp)
         
         # check the predefined output neurons to see if they're ready to fire
         # if they are, then return the action(s) to take
@@ -748,6 +748,7 @@ class hamster():
         self.sensations = np.load(path + '/sensations.npy')
         self.control_thresholds_pos = torch.load(path + '/control_thresholds_pos.pth')
         self.control_thresholds_neg = torch.load(path + '/control_thresholds_neg.pth')
+        self.layers = []
         for i in range(0, 61):
 
             self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
