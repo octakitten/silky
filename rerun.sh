@@ -11,9 +11,8 @@ hatch build -t wheel $FOLDER
 echo "Built package!"
 
 ## install the package
-source .venv/bin/activate
-pip3 uninstall silky -y
-pip3 install dist_beta/silky-*.whl
+.venv/bin/pip3 uninstall silky -y
+.venv/bin/pip3 install dist_beta/silky-*.whl
 
 ## run the package test script and print to a logfile
 printf -v today '%(%Y%m%d)T' -1
@@ -23,4 +22,6 @@ while [ -e "$filename" ]; do
 	printf -v filename '%s-%01d-log.txt' "$today" "$(( ++num ))"
 done
 echo 'Printing to logfile "%s"' "$filename"
-python3 run.py > "$filename"
+folder="logs/"
+mkdir -p "$folder"
+.venv/bin/python3 run.py > "$folder$filename"

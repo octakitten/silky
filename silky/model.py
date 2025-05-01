@@ -410,7 +410,6 @@ class ferret():
             torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
         elif input_tensor.ndim == 2:
             torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
-            torch.add(self.layers[0][:, :, 1],  input_tensor, out=self.layers[0][:, :, 1])
         else:
             print("Unexpected number of input tensor dimensions!")
 

@@ -99,7 +99,7 @@ class dataset_loader(torch.utils.data.Dataset):
             data = torch.tensor(data, dtype=torch.float32)
         return data, label
 
-def train(options):
+def train_on_dataset(options):
     '''
     This function trains a model on a dataset. You will need to decide on the parameters you want
     the model to have and pass them into this function with the options object. Thats kind of just for
@@ -226,7 +226,7 @@ def train(options):
     mdl.save(progpath)
     return
     
-def test(options):
+def test_on_dataset(options):
     # set up the dataset so it can be used on the gpu
     gpu = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     repo = options.repo
@@ -300,7 +300,7 @@ def test(options):
     return wins/attempts
 
 
-def train_hamster(options):
+def train_hamster_dataset(options):
     '''
     This function trains a model on a dataset. You will need to decide on the parameters you want
     the model to have and pass them into this function with the options object. Thats kind of just for
@@ -424,7 +424,7 @@ def train_hamster(options):
     mdl.save(progpath)
     return
     
-def test_hamster(options):
+def test_hamster_dataset(options):
     # set up the dataset so it can be used on the gpu
     gpu = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     repo = options.repo
@@ -499,3 +499,8 @@ def test_hamster(options):
     return wins/attempts
 
 
+def test_ferret_on_tetris():
+
+    mdl = model.ferret()
+
+    return
