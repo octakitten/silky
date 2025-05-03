@@ -169,7 +169,9 @@ class ferret():
         w (int): width of input images in pixels
         h (int): height of input images in pixels
         d (int): depth of the neural space
+        bounds (int): the range of values for the propensity to fire
         num_controls (int): number of controls
+        num_sensations (int): number of sensations
         
         :Returns:
         none
@@ -265,7 +267,7 @@ class ferret():
             random_gen.seed()
             self.layers.append(torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16))
         
-        for i in range(0, 8):
+        for i in range(0, 7):
             self.firing.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         return
     
