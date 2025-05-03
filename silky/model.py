@@ -402,7 +402,6 @@ class ferret():
         
         input_tensor = torch.clone(input_image, ).detach().to(dtype=torch.int16, device=self.device)
 
-        print(self.layers[0])
 
         if input_tensor.ndim == 3:
             torch.add(self.layers[0][:, :, 0],  input_tensor[0,:,:], out=self.layers[0][:, :, 0])
@@ -410,6 +409,8 @@ class ferret():
             torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
         elif input_tensor.ndim == 2:
             torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
+            print(self.layers[0][:, :, 0].shape)
+            print(input_tensor.shape)
         else:
             print("Unexpected number of input tensor dimensions!")
 
