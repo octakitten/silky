@@ -2,8 +2,7 @@ import sys
 import os
 import pytest
 # Add the parent directory to the system path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from model import Model
+from silky import Model
 
 @pytest.fixture
 def model():
