@@ -54,5 +54,22 @@ class screen():
         else:
             return -1
     
+    @staticmethod
+    def convert(val):
+        # convert an image to greyscale
+        # then convert the greyscale image to a pytorch tensor
+        # and return the tensor
+        if (isinstance(val, np.ndarray) == True):
+            img = Image.fromarray(val)
+            grey = img.convert('L')
+            return torch.from_numpy(np.array(grey)).int16()
+        elif (torch.is_tensor(val) == True):
+            grey = val.convert('L')
+            return torch.from_numpy(np.array(grey)).int16()
+        else:
+            img = Image.convert(val, 'L')
+            grey = img.convert('L')
+            return torch.from_numpy(np.array(grey)).int16()
+
     
     
