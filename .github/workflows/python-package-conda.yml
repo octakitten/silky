@@ -15,7 +15,7 @@ jobs:
       image: octakitten/silky-v02
     steps:
     - uses: actions/checkout@v4
-    - run hatch env create
+    - run: hatch env create
     - run: hatch build -t wheel dist/
     - uses: actions/setup-python@v4
       with:
