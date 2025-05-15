@@ -33,3 +33,4 @@ ENV PATH="/usr/local/bin:${PATH}"
 ENV PATH="/usr/bin:${PATH}"
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN echo 'Installed hatch' >> /usr/src/install/logs/install.txt
+ENV PIP_BREAK_SYSTEM_PACKAGES 1
