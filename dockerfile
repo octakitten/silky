@@ -27,7 +27,8 @@ RUN apt install -y gh
 RUN echo 'Installed gh' >> /usr/src/install/logs/install.txt
 RUN apt-get install -y pipx
 RUN pipx ensurepath
-ENV PATH="/usr/.local/bin:$PATH"
+ENV PATH="/root/.local/bin:$PATH"
 RUN echo 'Installed pipx' >> /usr/src/install/logs/install.txt
 RUN pipx install hatch
 RUN echo 'Installed hatch' >> /usr/src/install/logs/install.txt
+ENV PATH="/usr/.local/bin:${PATH}"
