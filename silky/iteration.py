@@ -240,6 +240,10 @@ def run_ferret_forest():
     prog_path = pth + '/in_progress'
     params = ( 255, 255, 255, 1000, 4, 3 )
     first_attempt = True
+    high_score = 0
+    high_score_attempt = 0
+    high_score_is_victory = False
+    attempt_num = 0
     while (True):
         iters = 0
         prev_mindx = 0
@@ -271,6 +275,7 @@ def run_ferret_forest():
             game = forest.forest(params)
         first_game_attempt = True
         while (True):
+              attempt_num += 1
               permute_degree = 2
               if (first_game_attempt == False):
                     game.restart()
@@ -278,6 +283,13 @@ def run_ferret_forest():
                     iters+=1
                     print('game over! number of attempts so far:')
                     print(iters)
+                    if (iters > high_score):
+                        high_score = iters
+                        high_score_attempt = attempt_num
+                        print('new high score found!')
+                        print(f"the score is: " (high_score))
+                        print(f"at attempt number: " (high_score_attempt))
+                        print("on a defeat.")
                     print('restarting...')
               else:
                     break
@@ -292,15 +304,36 @@ def run_ferret_forest():
                         permute_degree = 5
               if (iters % 100 == 0):
                     print('saving in progress, this may take a moment... ...')
+                    print(f"the current high score is " (high_score))
+                    print(f"from attempt number: " (high_score_attempt))
                     game.blob.save(prog_path)
               game.blob.permute(1, permute_degree)
-        print('victory! a winning model was found! it took this many iterations:')
-        print(iters)
+        print(f"victory! a winning model was found! it took this many iterations: " (iters))
+        if (!high_score_is_victory):
+            high_score = iters
+            high_score_attempt = attempt_num
+            print("new high score found!")
+            print(f"the score is: " (high_score))
+            print(f"at attempt number: " (high_score_attempt))
+            print("on a victory!")
+        elif (iters < high_score):
+            high_score = iters
+            high_score_attempt = attempt_num
+            print("new high score found!")
+            print(f"the score is: " (high_score))
+            print(f"at attempt number: " (high_score_attempt))
+            print("on a victory!")
         if (iters < prev_iters):
               prev_iters = iters
               game.blob.save(vic_path)
         if (iters < 5):
             break
+    print("finished!")
+    print(f"the high score is: " (high_score))
+    print(f"on attempt number: " (high_score_attempt))
+    if (high_score_is_victory):
+        print("it was on a victory!")
+    return high_score_attempt
 
 def run_hamster():
     iters = 0
@@ -390,3 +423,105 @@ def train_hamster():
         tr.train_hamster(opts)
         percent = tr.test_hamster(opts)
     return
+
+def run_ferret_forest_tracked():
+    total_iters = 0  # Track total iterations across all attempts
+    high_score = 0   # Best number of steps survived
+    high_score_iter = 0  # Which iteration achieved the high score
+    prev_iters = 10000
+    pth = os.getcwd() + '/ferret_forest'
+    vic_path = pth + '/victory'
+    prog_path = pth + '/in_progress'
+    params = ( 255, 255, 255, 1000, 4, 3 )
+    first_attempt = True
+    
+    while (True):
+        iters = 0
+        prev_mindx = 0
+        prev_mindy = 0
+        game = None
+        
+        if (os.path.exists(vic_path) & first_attempt):
+            try:
+                print('loading model from disk... ')
+                game = forest.forest(params, path=vic_path)
+            except:
+                print('unable to load a winning model...')
+                try:
+                    game = forest.forest(params, path=prog_path)
+                    print('loading an in-progress model from disk...')
+                except:
+                    print('unable to load an in-progress model')
+                    print('creating a new model...')
+                    game = forest.forest(params)
+        elif (os.path.exists(prog_path) & first_attempt):
+            try:
+                game = forest.forest(params, path=prog_path)
+                print('loading an in-progress model from disk...')
+            except:
+                print('unable to load an in-progress model')
+                print('creating a new model')
+                game = forest.forest(params)
+        elif (first_attempt):
+            print('creating a new model...')
+            game = forest.forest(params)
+            
+        first_game_attempt = True
+        while (True):
+            permute_degree = 2
+            if (first_game_attempt == False):
+                game.restart()
+                
+            # Play the game and track steps
+            steps = 0
+            game_result = game.play_game()
+            if hasattr(game, 'steps'):
+                steps = game.steps
+            
+            total_iters += 1
+            
+            if game_result == False:
+                iters += 1
+                print(f'Iteration {total_iters}: Lost after {steps} steps')
+                
+                # Update high score if this attempt was better
+                if steps > high_score:
+                    high_score = steps
+                    high_score_iter = total_iters
+                    print(f'New high score! Steps: {high_score} (Iteration: {high_score_iter})')
+                
+                print('restarting...')
+            else:
+                print(f'Iteration {total_iters}: Won after {steps} steps!')
+                if steps > high_score:
+                    high_score = steps
+                    high_score_iter = total_iters
+                break
+                
+            if (first_game_attempt):
+                prev_mindx = game.blob.min_dx
+                prev_mindy = game.blob.min_dy
+                first_game_attempt = False
+            else:
+                if (game.blob.min_dx + game.blob.min_dy ) < (prev_mindx + prev_mindy):
+                    permute_degree = 10
+                else:
+                    permute_degree = 5
+                    
+            if (iters % 100 == 0):
+                print('saving in progress, this may take a moment... ...')
+                print(f'Current stats - High Score: {high_score} (from iteration {high_score_iter})')
+                game.blob.save(prog_path)
+                
+            game.blob.permute(1, permute_degree)
+            
+        print('victory! a winning model was found!')
+        print(f'Final Statistics:')
+        print(f'Total iterations: {total_iters}')
+        print(f'Best performance: {high_score} steps (achieved on iteration {high_score_iter})')
+        
+        if (iters < prev_iters):
+            prev_iters = iters
+            game.blob.save(vic_path)
+        if (iters < 5):
+            break
