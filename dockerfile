@@ -8,6 +8,7 @@ RUN apt-get install -y python3
 RUN echo 'Installed python' >> /usr/src/install/logs/install.txt
 RUN apt-get install -y python3-pip
 RUN echo 'Installed pip' >> /usr/src/install/logs/install.txt
+RUN apt-get install -y python3-venv
 RUN echo 'which python' >> /usr/src/install/logs/install.txt
 RUN apt install -y curl
 RUN echo "Installed curl" >> /usr/src/install/logs/install.txt
