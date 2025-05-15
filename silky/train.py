@@ -504,3 +504,7 @@ def test_ferret_on_tetris():
     mdl = model.ferret()
 
     return
+
+def test_ferret_aliens():
+    mdl = model.ferret()
+    return

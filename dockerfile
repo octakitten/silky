@@ -27,4 +27,6 @@ RUN apt-get install -y pipx
 RUN echo 'Installed pipx' >> /usr/src/install/logs/install.txt
 RUN pipx install hatch
 ENV PATH="/root/.local/bin:${PATH}"
+ENV PATH="/usr/local/bin:${PATH}"
+ENV PATH="/usr/bin:${PATH}"
 RUN echo 'Installed hatch' >> /usr/src/install/logs/install.txt
