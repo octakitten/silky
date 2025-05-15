@@ -15,6 +15,7 @@ jobs:
       image: octakitten/silky-v02
     steps:
     - uses: actions/checkout@v4
+    - run: echo "$HOME/.local/bin" >>  $GITHUB_PATH
     - run: hatch env create
     - run: hatch build -t wheel dist/
     - run: hatch shell //
