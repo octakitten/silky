@@ -17,7 +17,8 @@ jobs:
     - uses: actions/checkout@v4
     - run: echo "$HOME/.local/bin" >>  $GITHUB_PATH
     - run: hatch env create
-    - run: hatch build -t wheel dist/
+    - run: hatch shell //
+        hatch build -t wheel dist/
     - run: hatch shell //
         pip install dist_beta/silky-*.whl //
         pytest
