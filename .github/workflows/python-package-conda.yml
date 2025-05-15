@@ -15,8 +15,7 @@ jobs:
       image: octakitten/silky-v02
     steps:
     - uses: actions/checkout@v4
-    - run: echo "$HOME/.local/bin" >>  $GITHUB_PATH
-    - run: hatch env create
+    - run: echo "$HOME/.local/bin" >> $GITHUB_PATH
     - run: hatch build -t wheel dist/ --break-system-packages
     - run: hatch run pip install dist_beta/silky-*.whl
     - run: hatch run pytest
