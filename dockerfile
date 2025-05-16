@@ -25,10 +25,7 @@ RUN apt install -y git
 RUN echo 'Installed git' >> /usr/src/install/logs/install.txt
 RUN apt install -y gh
 RUN echo 'Installed gh' >> /usr/src/install/logs/install.txt
-RUN apt-get install -y pipx
-RUN pipx ensurepath
-ENV PATH="/root/.local/bin:$PATH"
-RUN echo 'Installed pipx' >> /usr/src/install/logs/install.txt
-RUN pipx install hatch
+RUN python3 -m venv /venv
+RUN /venv/bin/python -m pip install hatch
 RUN echo 'Installed hatch' >> /usr/src/install/logs/install.txt
 ENV PATH="/usr/.local/bin:${PATH}"
