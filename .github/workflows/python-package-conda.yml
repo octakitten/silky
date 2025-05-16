@@ -15,9 +15,9 @@ jobs:
       image: octakitten/silky-v02
     steps:
     - uses: actions/checkout@v4
-    - run: /venv/bin/python3.12/site-packages/hatch env create
-    - run: /venv/bin/python3.12/site-packages/hatch build -t wheel dist/
-    - run: /venv/bin/python3.12/site-packages/hatch run pip install dist_beta/silky-*.whl
-    - run: /venv/bin/python3.12/site-packages/hatch run pytest
+    - run: /venv/bin/hatch env create
+    - run: /venv/bin/hatch build -t wheel dist/
+    - run: /venv/bin/hatch run pip install dist_beta/silky-*.whl
+    - run: /venv/bin/hatch run pytest
     - run: gh release delete latest -y --cleanup-tag
     - run: gh release create latest dist/silky-*.whl
