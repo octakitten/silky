@@ -2,11 +2,11 @@ import sys
 import os
 import pytest
 # Add the parent directory to the system path
-from silky import Model
+from silky import Model as Mdl
 
 @pytest.fixture
 def model():
-    return Model.ferret()
+    return Mdl.ferret()
 
 def init_params():
     return (

@@ -1,8 +1,8 @@
 import sys
 import os
 import pytest
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from forest import Forest
+#sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from silky import Forest
 
 
 @pytest.fixture
