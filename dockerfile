@@ -1,32 +1,6 @@
 FROM nvidia/cuda:12.5.1-runtime-ubuntu24.04
-RUN mkdir -p /usr/src/install/logs/
-RUN touch /usr/src/install/logs/install.txt
-RUN echo 'Created log file' > /usr/src/install/logs/install.txt
 RUN apt-get update
-RUN echo 'Updated apt-get' >> /usr/src/install/logs/install.txt
-RUN apt-get install -y python3
-RUN echo 'Installed python' >> /usr/src/install/logs/install.txt
-RUN apt-get install -y python3-pip
-RUN echo 'Installed pip' >> /usr/src/install/logs/install.txt
-RUN apt-get install -y python3-venv
-
-RUN echo 'which python' >> /usr/src/install/logs/install.txt
-RUN apt install -y curl
-RUN echo "Installed curl" >> /usr/src/install/logs/install.txt
-RUN apt-get install -y clang
-RUN echo 'Installed clang' >> /usr/src/install/logs/install.txt
-RUN cat /usr/src/install/logs/install.txt
-RUN echo "Home directory:" >> /usr/src/install/logs/install.txt
-RUN echo ${HOME} >> /usr/src/install/logs/install.txt
-RUN echo "PATH:" >> /usr/src/install/logs/install.txt
-RUN echo ${PATH} >> /usr/src/install/logs/install.txt
-RUN cat /usr/src/install/logs/install.txt
-RUN apt install -y git
-RUN echo 'Installed git' >> /usr/src/install/logs/install.txt
-RUN apt install -y gh
-RUN echo 'Installed gh' >> /usr/src/install/logs/install.txt
+RUN apt-get install -y python3 python3-pip python3-venv curl clang git gh
 RUN python3 -m venv /venv
 RUN /venv/bin/python -m pip install hatch
-RUN echo 'Installed hatch' >> /usr/src/install/logs/install.txt
-ENV PATH="/usr/.local/bin:${PATH}"
 RUN ln -s /venv/bin/python3 /usr/bin/python
