@@ -29,4 +29,4 @@ RUN python3 -m venv /venv
 RUN /venv/bin/python -m pip install hatch
 RUN echo 'Installed hatch' >> /usr/src/install/logs/install.txt
 ENV PATH="/usr/.local/bin:${PATH}"
-RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN ln -s /venv/bin/python3 /usr/bin/python
