@@ -18,6 +18,13 @@ jobs:
     - run: /venv/bin/hatch env create
     - run: /venv/bin/hatch build -t wheel dist/
     - run: /venv/bin/pip3 install dist/silky-*.whl
-    - run: /venv/bin/python3 -m pytest --maxfail=0 || true
     - run: gh release delete latest -y --cleanup-tag
     - run: gh release create latest dist/silky-*.whl
+    - uses: pavelzw/pytest-action@v2
+      with:
+        args: --maxfail=0
+        verbose: true
+        emoji: false
+        job-summary: true
+        click-to-expand: true
+        custom-pytest: /venv/bin/python3 -m pytest
