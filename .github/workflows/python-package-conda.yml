@@ -22,7 +22,6 @@ jobs:
     - run: gh release create latest dist/silky-*.whl
     - uses: pavelzw/pytest-action@v2
       with:
-        args: --maxfail=0
         verbose: true
         emoji: false
         job-summary: true
