@@ -20,10 +20,9 @@ jobs:
     - run: /venv/bin/pip3 install dist/silky-*.whl
     - run: gh release delete latest -y --cleanup-tag
     - run: gh release create latest dist/silky-*.whl
-    - uses: pavelzw/pytest-action@v2
+    - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report ==html | true
+    - name: Pytest coverage comment
+    - uses: MishaKav/pytest-coverage-comment@main
       with:
-        verbose: true
-        emoji: false
-        job-summary: true
-        click-to-expand: true
-        custom-pytest: /venv/bin/python3 -m pytest
+        pytest-coverage-path: ./htmlcov/index.html
+        junitxml-path: ./resultslog.xml
