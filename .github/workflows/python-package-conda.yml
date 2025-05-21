@@ -23,5 +23,5 @@ jobs:
     - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report ==html | true
     - uses: MishaKav/pytest-coverage-comment@main
       with:
-        pytest-coverage-path: ./htmlcov/index.html
-        junitxml-path: ./resultslog.xml
+        pytest-coverage-path: htmlcov/index.html
+        junitxml-path: resultslog.xml
