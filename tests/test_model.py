@@ -12,7 +12,7 @@ def init_params():
     return (
         256,
         256,
-        10,
+        12,
         256,
         6,
         2
