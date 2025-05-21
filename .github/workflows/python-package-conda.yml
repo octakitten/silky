@@ -21,7 +21,6 @@ jobs:
     - run: gh release delete latest -y --cleanup-tag
     - run: gh release create latest dist/silky-*.whl
     - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report ==html | true
-    - name: Pytest coverage comment
     - uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-coverage-path: ./htmlcov/index.html
