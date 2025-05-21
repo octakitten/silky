@@ -26,6 +26,7 @@ dependencies = [
     "pytest>=7.4.3",
     "coverage>=7.6.0",
     "pytest-cov>=6.0.0",
+    "pygame>=2.6.0",
 ]
 
 [project.packages]
