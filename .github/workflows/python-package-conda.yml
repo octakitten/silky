@@ -20,7 +20,7 @@ jobs:
     - run: /venv/bin/pip3 install dist/silky-*.whl
     - run: gh release delete latest -y --cleanup-tag
     - run: gh release create latest dist/silky-*.whl
-    - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report=term-missing | tee coverage.log
+    - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report=term-missing tests/ | tee coverage.log
     - uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-coverage-path: coverage.log
