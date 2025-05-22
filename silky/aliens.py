@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """ pygame.examples.aliens
 
 Shows a mini game where you have to defend against aliens.
@@ -245,7 +244,7 @@ class Score(pg.sprite.Sprite):
 def main(winstyle=0):
     # Initialize pygame
     if pg.get_sdl_version()[0] == 2:
-        pg.mixer.pre_init(44100, 32, 2, 1024)
+        #pg.mixer.pre_init(44100, 32, 2, 1024)
     pg.init()
     if pg.mixer and not pg.mixer.get_init():
         print("Warning, no sound")
@@ -397,45 +396,31 @@ def main(winstyle=0):
         response = mdl.update(silky.screen.convert(dirty))
 
         # create some events for the model to do things in the game with
-        Event1 = pg.event.Event(pg.K_LEFT, pg.KEYDOWN=1)
-        Event2 = pg.event.Event(pg.K_LEFT pg.KEYDoWN=0)
-        Event3 = pg.event.Event(pg.K_LEFT, pg.KEYUP=1)
-        Event4 = pg.event.Event(pg.K_LEFT, pg.KEYUP=0)
-        Event5 = pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=1)
-        Event6 = pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=0)
-        Event7 = pg.event.Event(pg.K_RIGHT, pg.KEYUP=1)
-        Event8 = pg.event.Event(pg.K_RIGHT, pg.KEYUP=0)
-        Event9 = pg.event.Event(pg.K_SPACE, pg.KEYDOWN=1)
-        Event10 = pg.event.Event(pg.K_SPACE, pg.KEYDOWN=0)
-        Event11 = pg.event.Event(pg.K_SPACE, pg.KEYUP=1)
-        Event12 = pg.event.Event(pg.K_SPACE, pg.KEYUP=0)
-
-
         # add keyboard events based on the model's response
         if response[0] == 1:
-            pg.event.post(Event1)
+            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYDOWN=1))
         elif response[0] == 0:
-            pg.event.post(Event2)
+            pg.event.post(pg.event.Event(pg.K_LEFT pg.KEYDoWN=0))
         if response[1] == 1:
-            pg.event.post(Event3)
+            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYUP=1))
         elif response[1] == 0:
-            pg.event.post(Event4)
+            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYUP=0))
         if response[2] == 1:
-            pg.event.post(Event5)
+            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=1))
         elif response[2] == 0:
-            pg.event.post(Event6)
+            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=0))
         if response[3] == 1:
-            pg.event.post(Event7)
+            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYUP=1))
         elif response[3] == 0:
-            pg.event.post(Event8)
+            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYUP=0))
         if response[4] == 1:
-            pg.event.post(Event9)
+            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYDOWN=1))
         elif response[4] == 0:
-            pg.event.post(Event10)
+            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYDOWN=0))
         if response[5] == 1:
-            pg.event.post(Event11)
+            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYUP=1))
         elif response[5] == 0:
-            pg.event.post(Event12)
+            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYUP=0))
 
         #pg.display.update(dirty)
 
