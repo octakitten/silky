@@ -26,11 +26,9 @@ jobs:
         pytest-coverage-path: coverage.log
         junitxml-path: resultslog.xml
 
-on: 
-  push:
+
     branches:
       - develop
-
 env:
   GH_TOKEN: ${{ github.token }}
 
