@@ -29,9 +29,6 @@ jobs:
 
     branches:
       - develop
-env:
-  GH_TOKEN: ${{ github.token }}
-
 jobs:
   build-linux:
     runs-on: [self-hosted, linux, x64]
