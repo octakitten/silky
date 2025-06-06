@@ -1,0 +1,27 @@
+name: Silky Wheel Release
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+on: 
+  push:
+    branches:
+      - develop
+
+      jobs:
+        build-linux:
+          runs-on: [self-hosted, linux, x64]
+          container:
+            image: octakitten/silky-v02
+          steps:
+          - uses: actions/checkout@v4
+          - run: /venv/bin/hatch env create
+          - run: /venv/bin/hatch build -t wheel dist/
+          - run: /venv/bin/pip3 install dist/silky-*.whl
+          - run: gh release delete develop -y --cleanup-tag
+          - run: gh release create develop dist/silky-*.whl
+          - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report=term-missing silky/tests/ | tee coverage.log
+          - uses: MishaKav/pytest-coverage-comment@main
+            with:
+              pytest-coverage-path: coverage.log
+              junitxml-path: resultslog.xml
