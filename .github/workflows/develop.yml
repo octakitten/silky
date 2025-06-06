@@ -1,12 +1,12 @@
 name: Silky Wheel Release
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
 on: 
   push:
     branches:
       - develop
+
+env:
+  GH_TOKEN: ${{ github.token }}
 
       jobs:
         build-linux:
