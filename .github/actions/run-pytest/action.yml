@@ -2,9 +2,6 @@ name: Run Pytest
 
 description: Default Pytest action for different branches
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
 inputs:
   name:
     description: name of the wheel release to install
