@@ -7,9 +7,6 @@ inputs:
     description: Name of the artifact
     required: true
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
 runs:
   using: "composite"
   steps:

@@ -2,9 +2,6 @@ name: Upload build artifacts
 
 description: Upload Pytest and other build artifacts
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
 runs:
   using: "composite"
   steps:
