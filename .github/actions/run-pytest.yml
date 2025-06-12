@@ -11,6 +11,7 @@ inputs:
     required: true
 
 runs:
+  using: "composite"
   steps:
     - name: Install wheel
       run: /venv/bin/pip3 install ${{ inputs.name }}

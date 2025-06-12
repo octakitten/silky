@@ -6,6 +6,7 @@ env:
   GH_TOKEN: ${{ github.token }}
 
 runs:
+  using: "composite"
   steps:
     - name: Zip test reports
       shell: bash
