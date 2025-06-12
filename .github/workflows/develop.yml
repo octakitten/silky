@@ -23,6 +23,7 @@ jobs:
         path: |
           /venv
           /hatch
+        key: self-hosted
     - uses: ./.github/actions/upload-artifacts.yml
       with:
         name: dist/silky-*.whl
