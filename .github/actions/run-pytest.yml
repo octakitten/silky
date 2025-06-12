@@ -19,4 +19,4 @@ runs:
       run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report=term-missing tests/reports | tee rests/reports/coverage.txt
 
     - name: Upload results to Github
-      uses: .github/actions/upload-test-artifacts.yml
+      uses: ./.github/actions/upload-test-artifacts.yml

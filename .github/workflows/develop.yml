@@ -18,10 +18,10 @@ jobs:
     - run: /venv/bin/hatch env create
     - run: /venv/bin/hatch build -t wheel dist/
     - run: /venv/bin/pip3 install dist/silky-*.whl
-    - uses: .github/actions/upload-artifacts.yml
+    - uses: ./.github/actions/upload-artifacts.yml
       with:
         name: dist/silky-*.whl
-    - uses: .github/actions/run-pytest.yml
+    - uses: ./.github/actions/run-pytest.yml
       with:
         name: dist/silky-*.whl
     - uses: MishaKav/pytest-coverage-comment@main
