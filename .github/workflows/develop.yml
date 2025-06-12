@@ -24,7 +24,7 @@ jobs:
     - run: rm -rf /.local/share/hatch
     - run: /venv/bin/hatch  env create
     - run: /venv/bin/hatch build -t wheel dist/
-    - run: /venv/bin/pip3 install dist/silky-*.whl
+    - run: /venv/bin/pip3 install dist/silky-*.whl --force-reinstall
     - uses: actions/cache/save@v4
       with: 
         path: |
