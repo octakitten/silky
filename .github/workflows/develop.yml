@@ -15,9 +15,14 @@ jobs:
       image: octakitten/silky-v02
     steps:
     - uses: actions/checkout@v4
-    - run: /venv/bin/hatch env create
+    - run: /venv/bin/hatch --data-dir /hatch env create
     - run: /venv/bin/hatch build -t wheel dist/
     - run: /venv/bin/pip3 install dist/silky-*.whl
+    - uses: actions/cache@v4
+      with: 
+        path: |
+          /venv
+          /hatch
     - uses: ./.github/actions/upload-artifacts.yml
       with:
         name: dist/silky-*.whl
