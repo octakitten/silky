@@ -14,7 +14,7 @@ runs:
       shell: bash
       run: |
         rm -f tests/artifacts/test-artifact.zip
-        zip -r "test-artifact-${{ inputs.name }}.zip" tests/artifacts -i ${{ inputs.name }}
+        zip -r "test-artifact.zip" tests/artifacts -i ${{ inputs.name }}
 
     - name: Store build artifacts on Github
       uses: actions/upload-artifact@v4
