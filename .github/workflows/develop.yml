@@ -16,14 +16,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: rm -rf /.local/share/hatch
-    - run: /venv/bin/hatch --data-dir /hatch env create
+    - run: /venv/bin/hatch  env create
     - run: /venv/bin/hatch build -t wheel dist/
     - run: /venv/bin/pip3 install dist/silky-*.whl
     - uses: actions/cache@v4
       with: 
         path: |
           /venv
-          /hatch
+          ./.hatch
         key: self-hosted
     - uses: ./.github/actions/upload-artifacts.yml
       with:

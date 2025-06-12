@@ -58,6 +58,9 @@ extra-dependencies = [
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/silky tests}"
 
+[tool.hatch.dirs.env]
+virtual = ".hatch"
+
 [tool.coverage.run]
 source_pkgs = ["silky", "tests"]
 branch = true
