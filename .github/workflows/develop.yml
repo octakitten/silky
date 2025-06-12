@@ -25,10 +25,10 @@ jobs:
           /venv
           ./.hatch
         key: self-hosted
-    - uses: /silky/.github/actions/upload-artifacts.yml
+    - uses: ./.github/actions/upload-artifacts
       with:
         name: dist/silky-*.whl
-    - uses: /silky/.github/actions/run-pytest.yml
+    - uses: ./.github/actions/run-pytest
       with:
         name: dist/silky-*.whl
     - uses: MishaKav/pytest-coverage-comment@main
