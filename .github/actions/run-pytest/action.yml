@@ -2,6 +2,9 @@ name: Run Pytest
 
 description: Default Pytest action for different branches
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 inputs:
   name:
     description: name of the wheel release to install
@@ -11,10 +14,12 @@ runs:
   using: "composite"
   steps:
     - name: Install wheel
-      run: /venv/bin/pip3 install ${{ inputs.name }}
+      shell: bash
+      run: /venv/bin/pip3 install ${{ inputs.name }} --force-reinstall
 
     - name: Run Pytest
+      shell: bash
       run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report=term-missing tests/reports | tee rests/reports/coverage.txt
 
     - name: Upload results to Github
-      uses: ./.github/actions/upload-test-artifacts.yml
+      uses: ./.github/actions/upload-test-artifacts
