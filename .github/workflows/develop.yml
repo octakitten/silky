@@ -18,10 +18,15 @@ jobs:
     - run: /venv/bin/hatch env create
     - run: /venv/bin/hatch build -t wheel dist/
     - run: /venv/bin/pip3 install dist/silky-*.whl
-    - run: gh release delete develop -y --cleanup-tag
-    - run: gh release create develop dist/silky-*.whl
-    - run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml --cov=silky --cov-report=term-missing silky/tests/ | tee coverage.log
+    - uses: ./.github/actions/upload-artifacts.yml
+      with:
+        name: dist/sily-*.whl
+    - uses: ./.github/actions/run-pytest.yml
+      with:
+        name: dist/silky-*.whl
     - uses: MishaKav/pytest-coverage-comment@main
       with:
-        pytest-coverage-path: coverage.log
-        junitxml-path: resultslog.xml
+        pytest-coverage-path: tests/reports/coverage.log
+        junitxml-path: tests/reports/resultslog.xml
+    - run: gh release delete develop -y --cleanup-tag
+    - run: gh release create develop dist/silky-*.whl

@@ -525,3 +525,26 @@ def run_ferret_forest_tracked():
             game.blob.save(vic_path)
         if (iters < 5):
             break
+
+def iterate_ferret_aliens():
+    params = (640, 480, 30, 256, 6, 0)
+    total_iters = 0
+    high_score = 0
+    high_turns = 0
+    high_score_iter = 0
+    pth = os.getcwd() + '/aliens'
+    latest_path = pth + '/latest'
+    best_path = pth + '/best'
+    permute_degree = 2
+
+    first_attempt = True
+    turns = 0
+    score = 0
+    prev_turns = 0
+    prev_score = 0
+    done = False
+
+    mdl = silky.model.ferret()
+    while (!done):
+        if (os.path.exists(best_path) & first_attempt):
+            try:

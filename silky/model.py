@@ -835,7 +835,7 @@ class hamster():
             self.__neg_sensation(sense_num, amt)
         return
 
-    def permute(self, fraction):        
+    def permute(self, fraction):
         '''
         Permute the model's personality by a certain degree.
 
@@ -891,7 +891,7 @@ class hamster():
         #torch.add(input_tensor, torch.ones(size=input_image.size(), device=self.device), out=input_tensor)
         #print(input_tensor)
         print('layers[0]')
-        #print(self.layers[0])
+        print(torch.shape(self.layers[0]))
         try:
             torch.add(self.layers[0][:, :, 0],  input_tensor[0, :, :], out=self.layers[0][:, :, 0])
             torch.add(self.layers[0][:, :, 1],  input_tensor[1, :, :], out=self.layers[0][:, :, 1])
@@ -900,38 +900,21 @@ class hamster():
             torch.add(self.layers[0][:, :, 0],  input_tensor[0, :, :], out=self.layers[0][:, :, 0])
 
         print('input tensor')
-        print(input_tensor)
+        print(torch.shape(input_tensor))
 
         # update layers[0] based on the arctan function we're using, as well as inputs from the threshold and signal layers
         torch.add(torch.add(torch.atan(torch.add(self.layers[0], self.layers[1])), self.layers[3]), torch.add(torch.atan(torch.add(self.layers[0], self.layers[2])), self.layers[4]), out=self.layers[0])
 
-        # do some rolls to simulate neurons sending messages to each other
-        '''
-        temp = torch.zeros(size=(self.width, self.height, self.depth), device=self.device, dtype=torch.float64)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 2), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 2), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 2), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 2), out=temp)
-        torch.add(self.layers[0], temp, out=self.layers[0])
-        '''
         # so we're going to try using kron sums again... i want to propagate information forward from the input images through the whole network
         # in one go... i think this way we can get results faster per turn than having to wait for the model to slowly propagate information through
         # layer0...
         # its going to be more resource intensive but i think in the long run it wont actually slow the overall process down.
         for i in range(0, 3):
-            torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)])), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
+            torch.add(torch.tensor(torch.sum(torch.tensor_split(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), (self.width, self.height), (0, 1))), device=self.device), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
 
         for i in range(3, int((self.depth - 1)/2)):
             i = i * 2
-            torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)])), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
+            torch.add(torch.tensor(torch.sum(torch.tensor_split(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), (self.width, self.height), (0, 1))), device=self.device), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
             torch.add(self.layers[0][:,:,i+1], self.layers[0][:,:,(i+2)], out=self.layers[0][:,:,i+2])
 
         
@@ -954,7 +937,7 @@ class hamster():
             torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 1) / 2)], self.layers[(29 + (i - 13)*2)]))), torch.add(self.layers[int((i - 1) / 2)], self.layers[(30 + (i - 13)*2)]), out=self.layers[i])
 
         print('layers[0]')
-        print(self.layers[0])
+        print(torch.shape(self.layers[0]))
         return self.outputs
 
     def backprop(self, guess, answer, constant=None):

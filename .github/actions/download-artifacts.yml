@@ -1,0 +1,26 @@
+name: Download Build Artifacts
+
+description: Download the Pytest or other build artifacts that are created during the testing process.
+
+inputs:
+  name:
+    description: Name of the artifact
+    required: true
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+runs:
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+
+    - name: Unzip
+      shell: bash
+      run: unzip -o artifacts.zip
+
+    - name: Remove zip archive
+      shell: bash
+      run: rm -o artifacts.zip

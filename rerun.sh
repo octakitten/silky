@@ -4,7 +4,7 @@
 
 ## build the package
 echo  "Building Silky package"
-FOLDER="dist_beta/"
+FOLDER="dist/"
 rm -f $FOLDER*.whl
 rm -f $FOLDER*.tar.gz
 hatch build -t wheel $FOLDER
