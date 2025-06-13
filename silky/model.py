@@ -260,14 +260,14 @@ class ferret():
         achieve this, we first generate random values between 0 and 1, then for the positive layers we multiply by n and add 1, and for
         the negative layers we divide by n and subtract from 1. This will give us the desired range of values for the personality layers.
         '''
-        for i in range(0, 61):
+        for i in range(0, 29):
             self.layers.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         for i in range(29, 61):
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
             self.layers.append(torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16))
         
-        for i in range(0, 7):
+        for i in range(0, 8):
             self.firing.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         return
     
@@ -765,7 +765,7 @@ class hamster():
         torch.add(torch.mul(self.control_thresholds_pos, self.pos_propensity, out=self.control_thresholds_pos), 1, out=self.control_thresholds_pos)
         random_gen.seed()
         self.control_thresholds_neg = torch.rand(size=(self.num_controls, self.num_controls), generator=random_gen, device=self.device)
-        torch.subtract(-1, torch.divide(self.control_thresholds_neg, self.neg_propensity, out=self.control_thresholds_neg), out=self.control_thresholds_neg)
+        torch.subtract(-1, torch.mul(self.control_thresholds_neg, self.neg_propensity, out=self.control_thresholds_neg), out=self.control_thresholds_neg)
         return
 
     def __new_sensations(self):

@@ -1,6 +1,6 @@
 import pytest
 import silky
-from silky import Aliens as alns
+from silky import aliens as alns
 
 def test_aliens():
     
