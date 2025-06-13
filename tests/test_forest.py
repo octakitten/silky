@@ -1,6 +1,7 @@
 import sys
 import os
 import pytest
+import silky
 #sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from silky import Forest
 

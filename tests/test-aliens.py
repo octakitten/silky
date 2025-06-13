@@ -1,4 +1,5 @@
 import pytest
+import silky
 from silky import Aliens as alns
 
 def test_aliens():

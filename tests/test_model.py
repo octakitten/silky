@@ -1,7 +1,7 @@
 import sys
 import os
 import pytest
-# Add the parent directory to the system path
+import silky
 from silky import Model as Mdl
 
 @pytest.fixture
