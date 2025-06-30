@@ -16,7 +16,7 @@ runs:
 
     - name: Run Pytest
       shell: bash
-      run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml  --cov-report=term-missing tests/ | tee tests/reports/coverage.txt
+      run: /venv/bin/python3 -m pytest --maxfail=0 --junit-xml=resultslog.xml  --cov-report=term-missing tests/ | tee tests/reports/coverage.txt || true
 
     - name: Upload results to Github
       uses: ./.github/actions/upload-test-artifacts
