@@ -161,7 +161,7 @@ class ferret():
         
         return
     
-    def create(self, width, height, depth, bounds, num_controls, num_sensations):    
+    def create(self, params):    
         '''
         Create a new model with the given dimensions and number of controls.
         
@@ -184,6 +184,13 @@ class ferret():
         perform a certain task that requires, for instance, controlling 4 seperate keyboard keypresses, 
         then you would want a model with 4 controls.
         '''
+        width = params[0]
+        height = params[1]
+        depth = params[2]
+        bounds = params[3]
+        num_controls = params[4]
+        num_sensations = params[5]
+
         self.__check_cuda()
         self.width = width
         print('assigned width')

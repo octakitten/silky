@@ -27,7 +27,7 @@ def test011():
     '''
     model = mdl.general()
     prev_model = 0
-    model.create(255, 255, 255, 1000, 4, 2)
+    model.create((255, 255, 255, 1000, 4, 2))
     iters = 0
     first_attempt = True
     while (True):
@@ -80,7 +80,7 @@ def test012(dir):
     first_attempt = True
     model = mdl.general()
     prev_model = 0
-    model.create(255, 255, 255, 1000, 4, 3)
+    model.create((255, 255, 255, 1000, 4, 3))
     iters = 0
     game = forest.forest(model)
     model = 0
@@ -128,7 +128,7 @@ def test013(dir):
                 print('loading in progress model from disk...')
             except:
                 print('unable to load an in progress model')
-                model.create(255, 255, 255, 1000, 4, 3)
+                model.create((255, 255, 255, 1000, 4, 3))
                 print('creatng a new model...')
     elif (os.path.exists(sys.path[0] + dir + '/saved_models/in_progress')):
         try:
@@ -136,10 +136,10 @@ def test013(dir):
             print('loading model from disk...')
         except:
             print('unable to load an in progress model')
-            model.create(255, 255, 255, 1000, 4, 3)
+            model.create((255, 255, 255, 1000, 4, 3))
             print('creating a new model...')
     else:
-        model.create(255, 255, 255, 1000, 4, 3)
+        model.create((255, 255, 255, 1000, 4, 3))
         print('creatng a new model...')
     iters = 0
     game = forest.forest(model)
@@ -187,7 +187,7 @@ def test014(dir):
                 print('loading in progress model from disk...')
             except:
                 print('unable to load an in progress model')
-                model.create(255, 255, 255, 1000, 4, 3)
+                model.create((255, 255, 255, 1000, 4, 3))
                 print('creatng a new model...')
     elif (os.path.exists(sys.path[0] + dir + '/saved_models/in_progress')):
         try:
@@ -195,10 +195,10 @@ def test014(dir):
             print('loading model from disk...')
         except:
             print('unable to load an in progress model')
-            model.create(255, 255, 255, 1000, 4, 3)
+            model.create((255, 255, 255, 1000, 4, 3))
             print('creating a new model...')
     else:
-        model.create(255, 255, 255, 1000, 4, 3)
+        model.create((255, 255, 255, 1000, 4, 3))
         print('creatng a new model...')
     iters = 0
     game = forest.forest(model)
@@ -359,7 +359,7 @@ def run_hamster():
                 except:
                     print('unable to load an in-progress model')
                     print('creating a new model...')
-                    model.create(params[0], params[1], params[2], params[3], params[4], params[5])
+                    model.create(params)
         elif (os.path.exists(prog_path) & first_attempt):
             try:
               model.load(prog_path)
@@ -367,10 +367,10 @@ def run_hamster():
             except:
                 print('unable to load an in-progress model')
                 print('creating a new model')
-                model.create(params[0], params[1], params[2], params[3], params[4], params[5])
+                model.create(params)
         elif (first_attempt):
               print('creating a new model...')
-              model.create(params[0], params[1], params[2], params[3], params[4], params[5])
+              model.create(params)
 
         game = forest.forest(model)
         first_game_attempt = True

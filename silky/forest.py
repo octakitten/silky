@@ -38,7 +38,7 @@ class forest():
     def __init__(self, params, path=None):
         if path==None:
             self.blob = mdl.ferret()
-            self.blob.create(params[0], params[1], params[2], params[3], params[4], params[5])
+            self.blob.create(params)
         else:
             self.blob = mdl.ferret()
             self.blob.load(path)
