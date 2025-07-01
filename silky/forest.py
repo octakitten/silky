@@ -96,7 +96,7 @@ class forest():
         return
     
     def __create_starting_screen(self):
-        self.game_screen = torch.add(torch.zeros((self.width, self.height), device=torch.device('cuda'), dtype=torch.int16), self.tile)
+        self.game_screen = torch.add(torch.zeros((self.width, self.height), device=self.blob.device, dtype=torch.int16), self.tile)
         self.__create_forest()
         return
     
