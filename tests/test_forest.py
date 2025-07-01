@@ -13,7 +13,7 @@ def model_params():
             50,
             100,
             6,
-            2)
+            3)
 
 def test_forest_init():
     game = forest.forest(model_params())

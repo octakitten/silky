@@ -184,25 +184,19 @@ class ferret():
         perform a certain task that requires, for instance, controlling 4 seperate keyboard keypresses, 
         then you would want a model with 4 controls.
         '''
-        width = params[0]
-        height = params[1]
-        depth = params[2]
-        bounds = params[3]
-        num_controls = params[4]
-        num_sensations = params[5]
 
         self.__check_cuda()
-        self.width = width
+        self.width = params[0]
         print('assigned width')
-        self.height = height
+        self.height = params[1]
         print('assigned height')
-        self.depth = depth
+        self.depth = params[2]
         print('assigned depth')
-        self.bounds = bounds
+        self.bounds = params[3]
         print('assigned bounds')
-        self.num_controls = num_controls
+        self.num_controls = params[4]
         print('assigned controls')
-        self.num_sensations = num_sensations
+        self.num_sensations = params[5]
         print('assigned values')
         self.__new_controls()
         print('new controls')
@@ -667,19 +661,20 @@ class hamster():
         self.__check_cuda()
         return
 
-    def create(self, width, height, depth, bounds, num_controls, num_sensations):
+    def create(self, params):
+        # params: width, height, depth, bounds, num_controls, num_sensations
         self.__check_cuda()
-        self.width = width
+        self.width = params[0]
         print('assigned width')
-        self.height = height
+        self.height = params[1]
         print('assigned height')
-        self.depth = depth
+        self.depth = params[2]
         print('assigned depth')
-        self.bounds = bounds
+        self.bounds = params[3]
         print('assigned bounds')
-        self.num_controls = num_controls
+        self.num_controls = params[4]
         print('assigned controls')
-        self.num_sensations = num_sensations
+        self.num_sensations = params[5]
         print('assigned values')
         self.__new_controls()
         print('new controls')
