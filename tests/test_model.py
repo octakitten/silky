@@ -25,7 +25,7 @@ def test_ferret_model_initialization():
     assert model is not None
     #assert isinstance(model, Mdl.ferret())
     params = init_params()
-    model.create(params[0], params[1], params[2], params[3], params[4], params[5])
+    model.create(params)
     assert model.width == params[0]
     assert model.height == params[1]
     assert model.depth == params[2]
@@ -53,7 +53,7 @@ def test_hamster_model_initialization():
     assert model2 is not None
     #assert isinstance(model2, Mdl.hamster())
     params = init_params()
-    model2.create(params[0], params[1], params[2], params[3], params[4], params[5])
+    model2.create(params)
     assert model2.width == params[0]
     assert model2.height == params[1]
     assert model2.depth == params[2]
