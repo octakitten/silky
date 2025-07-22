@@ -32,6 +32,8 @@ os.environ["SDL_VIDEODRIVER"] = "dummy"
 import pygame as pg
 
 import silky
+from silky import model as model
+from silky import screen as sscreen
 
 
 
@@ -48,6 +50,7 @@ BOMB_ODDS = 60  # chances a new bomb will drop
 ALIEN_RELOAD = 12  # frames between new aliens
 SCREENRECT = pg.Rect(0, 0, 640, 480)
 SCORE = 0
+TURNS = 0
 mdl = 0
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -243,7 +246,7 @@ class Score(pg.sprite.Sprite):
 
 def play(winstyle=0):
     # Initialize pygame
-    if pg.get_sdl_version()[0] == 2:
+    #if pg.get_sdl_version()[0] == 2:
         #pg.mixer.pre_init(44100, 32, 2, 1024)
     pg.init()
     if pg.mixer and not pg.mixer.get_init():
@@ -283,10 +286,10 @@ def play(winstyle=0):
     # load the sound effects
     boom_sound = load_sound("boom.wav")
     shoot_sound = load_sound("car_door.wav")
-    if pg.mixer:
-        music = os.path.join(main_dir, "data", "house_lo.wav")
-        pg.mixer.music.load(music)
-        pg.mixer.music.play(-1)
+    #if pg.mixer:
+        #music = os.path.join(main_dir, "data", "house_lo.wav")
+        #pg.mixer.music.load(music)
+        #pg.mixer.music.play(-1)
 
     # Initialize Game Groups
     aliens = pg.sprite.Group()
@@ -301,6 +304,8 @@ def play(winstyle=0):
 
     # initialize our starting sprites
     global SCORE
+    global TURNS
+    global mdl
     player = Player(all)
     Alien(
         aliens, all, lastalien
@@ -309,8 +314,9 @@ def play(winstyle=0):
         all.add(Score(all))
 
     # Run our main loop whilst the player is alive.
+    TURNS = 0
     while player.alive():
-        turns = turns + 1
+        TURNS = TURNS + 1
         # get input
 
         for event in pg.event.get():
@@ -395,45 +401,45 @@ def play(winstyle=0):
         dirty = all.draw(screen)
         
         # show the model the game screen and have it react
-        response = mdl.update(silky.screen.convert(dirty))
+        response = mdl.update(sscreen.convert(dirty))
 
         # create some events for the model to do things in the game with
         # add keyboard events based on the model's response
         if response[0] == 1:
-            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYDOWN=1))
+            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYDOWN))
             print("Press left key down")
         elif response[0] == 0:
-            pg.event.post(pg.event.Event(pg.K_LEFT pg.KEYDoWN=0))
+            #pg.event.post(pg.event.Event(pg.K_LEFT pg.KEYDOWN))
             print("Stop pressing left key down")
         if response[1] == 1:
-            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYUP=1))
+            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYUP))
             print("Press left key up")
         elif response[1] == 0:
-            pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYUP=0))
+            #pg.event.post(pg.event.Event(pg.K_LEFT, pg.KEYUP))
             print("Stop pressing left key up")
         if response[2] == 1:
-            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=1))
+            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYDOWN))
             print("Press right key down")
         elif response[2] == 0:
-            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=0))
+            #pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYDOWN=0))
             print("Stop pressing right key down")
         if response[3] == 1:
-            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYUP=1))
+            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYUP))
             print("Press right key up")
         elif response[3] == 0:
-            pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYUP=0))
+            #pg.event.post(pg.event.Event(pg.K_RIGHT, pg.KEYUP=0))
             print("Stop pressing right key up")
         if response[4] == 1:
-            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYDOWN=1))
+            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYDOWN))
             print("Press fire key down")
         elif response[4] == 0:
-            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYDOWN=0))
+            #pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYDOWN=0))
             print("Stop pressing fire key down")
         if response[5] == 1:
-            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYUP=1))
+            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYUP))
             print("Press fire key up")
         elif response[5] == 0:
-            pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYUP=0))
+            #pg.event.post(pg.event.Event(pg.K_SPACE, pg.KEYUP=0))
             print("Stop pressing fire key up")
 
         #pg.display.update(dirty)
@@ -451,6 +457,9 @@ def play(winstyle=0):
 
 
 def iterate():
+    global SCORE
+    global TURNS
+    global mdl
     params = (640, 480, 30, 256, 6, 0)
     total_iters = 0
     high_score = 0
@@ -468,8 +477,8 @@ def iterate():
     prev_score = 0
     done = False
 
-    mdl = silky.model.ferret()
-    while (!done):
+    mdl = model.ferret()
+    while (done == False):
         if (os.path.exists(best_path) & first_attempt):
             try:
                 mdl.load(best_path)
@@ -482,7 +491,7 @@ def iterate():
                     mdl.load(latest_path)
                     high_turns = np.load(latest_path + '/high_turns.npy')
                     high_score = np.load(lates_path + '/high_score.npy')
-                    print("Loading latest model.)"
+                    print("Loading latest model.)")
                 except:
                     print("Could not find latest model.")
                     print("Creating new model.")
@@ -504,19 +513,19 @@ def iterate():
             mdl.create(params)
             mdl.save(latest_path)
         first_game_attempt = True
-        while (!done):
+        while (done == False):
             play()
             if (first_game_attempt):
                 print("First attempt!")
-                high_turns = turns
-                high_score = score
+                high_turns = TURNS
+                high_score = SCORE
             else:
                 if (high_turns + high_score < turns + score):
                     print("New high score found! Saving model...")
                     print(f"Iteration number: {total_iters}")
                     mdl.save(best_path)
-                    high_turns = turns
-                    high_score = score
+                    high_turns = TURNS
+                    high_score = SCORE
                     high_score_iter = total_iters
                     np.save(best_path + '/high_turns', high_turns)
                     np.save(best_path + '/high_score', high_score)

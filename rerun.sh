@@ -12,7 +12,7 @@ echo "Built package!"
 
 ## install the package
 .venv/bin/pip3 uninstall silky -y
-.venv/bin/pip3 install dist_beta/silky-*.whl
+.venv/bin/pip3 install ${FOLDER}silky-*.whl
 
 ## run the package test script and print to a logfile
 printf -v today '%(%Y%m%d)T' -1
@@ -24,4 +24,4 @@ done
 echo 'Printing to logfile "%s"' "$filename"
 folder="logs/"
 mkdir -p "$folder"
-.venv/bin/python3 run.py > "$folder$filename"
+.venv/bin/python3 -m run.py > "$folder$filename"

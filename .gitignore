@@ -192,3 +192,5 @@ test2.sh
 testing01/
 *-log.txt
 *.txt
+aliens/latest/
+*.whl
