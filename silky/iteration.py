@@ -238,7 +238,7 @@ def run_ferret_forest():
     pth = os.getcwd() + '/ferret_forest'
     vic_path = pth + '/victory'
     prog_path = pth + '/in_progress'
-    params = ( 255, 255, 255, 1000, 4, 3 )
+    params = ( 255, 255, 20, 1000, 4, 3 )
     first_attempt = True
     high_score = 0
     high_score_attempt = 0
@@ -287,8 +287,8 @@ def run_ferret_forest():
                         high_score = iters
                         high_score_attempt = attempt_num
                         print('new high score found!')
-                        print(f"the score is: " (high_score))
-                        print(f"at attempt number: " (high_score_attempt))
+                        print(f"the score is: ", (high_score))
+                        print(f"at attempt number: ", (high_score_attempt))
                         print("on a defeat.")
                     print('restarting...')
               else:
@@ -304,24 +304,24 @@ def run_ferret_forest():
                         permute_degree = 5
               if (iters % 100 == 0):
                     print('saving in progress, this may take a moment... ...')
-                    print(f"the current high score is " (high_score))
-                    print(f"from attempt number: " (high_score_attempt))
+                    print(f"the current high score is ", (high_score))
+                    print(f"from attempt number: ", (high_score_attempt))
                     game.blob.save(prog_path)
               game.blob.permute(1, permute_degree)
-        print(f"victory! a winning model was found! it took this many iterations: " (iters))
-        if (!high_score_is_victory):
+        print(f"victory! a winning model was found! it took this many iterations: ", (iters))
+        if (high_score_is_victory == False):
             high_score = iters
             high_score_attempt = attempt_num
             print("new high score found!")
-            print(f"the score is: " (high_score))
-            print(f"at attempt number: " (high_score_attempt))
+            print(f"the score is: ", (high_score))
+            print(f"at attempt number: ", (high_score_attempt))
             print("on a victory!")
         elif (iters < high_score):
             high_score = iters
             high_score_attempt = attempt_num
             print("new high score found!")
-            print(f"the score is: " (high_score))
-            print(f"at attempt number: " (high_score_attempt))
+            print(f"the score is: ", (high_score))
+            print(f"at attempt number: ", (high_score_attempt))
             print("on a victory!")
         if (iters < prev_iters):
               prev_iters = iters
@@ -329,8 +329,8 @@ def run_ferret_forest():
         if (iters < 5):
             break
     print("finished!")
-    print(f"the high score is: " (high_score))
-    print(f"on attempt number: " (high_score_attempt))
+    print(f"the high score is: ", (high_score))
+    print(f"on attempt number: ", (high_score_attempt))
     if (high_score_is_victory):
         print("it was on a victory!")
     return high_score_attempt
@@ -338,11 +338,11 @@ def run_ferret_forest():
 def run_hamster():
     iters = 0
     prev_iters = 10000
-    path = sys.path[0] + '/velvet/saved_models'
+    path = sys.path[0] + '/velvet/models'
     vic_path = path + '/victory'
     prog_path = path + '/in_progress'
     model = mdl.hamster()
-    params = ( 255, 255, 255, 500, 4, 3 )
+    params = ( 100, 100, 16, 500, 4, 3 )
     first_attempt = True
     while (True):
         iters = 0
@@ -372,12 +372,12 @@ def run_hamster():
               print('creating a new model...')
               model.create(params)
 
-        game = forest.forest(model)
+        game = forest.forest(type='hamster', model=model)
         first_game_attempt = True
         while (True):
               permute_degree = 2
               if (first_game_attempt == False):
-                    game.restart(model)
+                    game.restart()
               if (game.play_game() == False):
                     iters+=1
                     print('game over! number of attempts so far:')
@@ -527,7 +527,7 @@ def run_ferret_forest_tracked():
             break
 
 def iterate_ferret_aliens():
-    params = (640, 480, 30, 256, 6, 0)
+    params = (640, 480, 20, 256, 6, 0)
     total_iters = 0
     high_score = 0
     high_turns = 0
@@ -544,7 +544,7 @@ def iterate_ferret_aliens():
     prev_score = 0
     done = False
 
-    mdl = silky.model.ferret()
-    while (!done):
-        if (os.path.exists(best_path) & first_attempt):
-            try:
+    #mdl = silky.model.ferret()
+    #while (!done):
+        #if (os.path.exists(best_path) & first_attempt):
+            #try:

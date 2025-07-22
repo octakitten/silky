@@ -412,8 +412,8 @@ class ferret():
             torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
         elif input_tensor.ndim == 2:
             torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
-            print(self.layers[0][:, :, 0].shape)
-            print(input_tensor.shape)
+            print(self.layers[0][:, :, 0].size())
+            print(input_tensor.size())
         else:
             print("Unexpected number of input tensor dimensions!")
 
@@ -648,6 +648,9 @@ class hamster():
     layers = []
 
     outputs = 0
+    relu = torch.nn.ReLU()
+    lin = None
+    tanh = torch.nn.Tanh()
 
     def __check_cuda(self):
         if torch.cuda.is_available():
@@ -686,6 +689,7 @@ class hamster():
         print('new personality')
         self.__new_sensations()
         print('new sensations')
+        self.lin = torch.nn.Linear(self.width * self.height, self.width * self.height, bias=True, dtype=torch.float32, device=self.device)
 
         return
 
@@ -719,11 +723,11 @@ class hamster():
     def __new_dna(self):
         for i in range(0, 61):
             self.layers.append(torch.tensor(data=1, device=self.device))
-            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         for i in range(29, 61):
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
-            self.layers[i] = torch.multiply(other=self.pos_propensity, input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device)))
+            self.layers[i] = torch.multiply(other=self.pos_propensity, input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float32, device=self.device)))
 
     def save(self, path):
         np.save(path + '/width', self.width)
@@ -754,7 +758,6 @@ class hamster():
         self.control_thresholds_neg = torch.load(path + '/control_thresholds_neg.pth')
         self.layers = []
         for i in range(0, 61):
-
             self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
         return
         
@@ -777,11 +780,38 @@ class hamster():
         return
 
     def __pos_sensation(self, sense_num, amt):
-        torch.add(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
+        with torch.no_grad():
+            torch.add(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
         return
 
     def __neg_sensation(self, sense_num, amt):
-        torch.subtract(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
+        with torch.no_grad():
+            torch.subtract(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
+        return
+    
+    def sense(self, sense_num, amt, pos):    
+        '''
+        Train the model by giving it feedback on its actions.
+
+        :Parameters:
+        sense_num (int): the index of the sensation neuron to train
+        amt (float): the amount to train the sensation neuron by
+        pos (bool): whether the sensation is positive or negative
+
+        :Returns:
+        none
+
+        :Comments: 
+        Call this function whenever the model either does something right or makes a mistake.
+        set pos to True if the sensation is positive, and False if the sensation is negative.
+        You'll need to set conditions in your game that call this function automatically while it's playing.
+        This function is also intended to be used later on in the training process, when the model is
+        being used by a user on real world tasks and needs feedback.
+        '''
+        if (pos):
+            self.__pos_sensation(sense_num, amt)
+        else:
+            self.__neg_sensation(sense_num, amt)
         return
 
     def copy(self, model):
@@ -809,7 +839,7 @@ class hamster():
 
     def clear(self):
         for i in range(0, 28):
-            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         return
     
     def train(self, sense_num, amt, pos):    
@@ -870,21 +900,21 @@ class hamster():
         torch.add(self.control_thresholds_neg, threshn, out=self.control_thresholds_neg)
 
         for i in range(29, 61):
-            temp = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            temp = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
-            torch.multiply(input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device)), other=self.pos_propensity, out=temp)
+            torch.multiply(input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float32, device=self.device)), other=self.pos_propensity, out=temp)
             torch.divide(temp, fraction, out=temp)
             torch.add(self.layers[i], temp, out=self.layers[i])
         for i in range(0, 28):
-            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         return
         
     def update(self, input_image):
         if (torch.is_tensor(input_image) == False):
             return -1
         # add in the input image
-        input_image.to(dtype=torch.float64, device=self.device)
+        input_image.to(dtype=torch.float32, device=self.device)
         input_tensor = torch.tensor(input_image, device=self.device)
         #print(input_image.device)
         #print(input_tensor)
@@ -893,54 +923,90 @@ class hamster():
         #torch.add(input_tensor, torch.ones(size=input_image.size(), device=self.device), out=input_tensor)
         #print(input_tensor)
         print('layers[0]')
-        print(torch.shape(self.layers[0]))
+        print(self.layers[0].size())
         try:
-            torch.add(self.layers[0][:, :, 0],  input_tensor[0, :, :], out=self.layers[0][:, :, 0])
-            torch.add(self.layers[0][:, :, 1],  input_tensor[1, :, :], out=self.layers[0][:, :, 1])
-            torch.add(self.layers[0][:, :, 2],  input_tensor[2, :, :], out=self.layers[0][:, :, 2])
+            with torch.no_grad():
+                torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
+                torch.add(self.layers[0][:, :, 1],  input_tensor, out=self.layers[0][:, :, 1])
+                torch.add(self.layers[0][:, :, 2],  input_tensor, out=self.layers[0][:, :, 2])
         except:
-            torch.add(self.layers[0][:, :, 0],  input_tensor[0, :, :], out=self.layers[0][:, :, 0])
+            with torch.no_grad():
+                torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
 
         print('input tensor')
-        print(torch.shape(input_tensor))
+        print(input_tensor.size())
 
         # update layers[0] based on the arctan function we're using, as well as inputs from the threshold and signal layers
-        torch.add(torch.add(torch.atan(torch.add(self.layers[0], self.layers[1])), self.layers[3]), torch.add(torch.atan(torch.add(self.layers[0], self.layers[2])), self.layers[4]), out=self.layers[0])
+        #torch.add(torch.add(torch.atan(torch.add(self.layers[0], self.layers[1])), self.layers[3]), torch.add(torch.atan(torch.add(self.layers[0], self.layers[2])), self.layers[4]), out=self.layers[0])
 
         # so we're going to try using kron sums again... i want to propagate information forward from the input images through the whole network
         # in one go... i think this way we can get results faster per turn than having to wait for the model to slowly propagate information through
         # layer0...
         # its going to be more resource intensive but i think in the long run it wont actually slow the overall process down.
-        for i in range(0, 3):
-            torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
 
-        relu = torch.nn.ReLU()
-        for i in range(3, int((self.depth - 1)/2)):
-            i = i * 2
-            torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
-            self.layers[0][:,:,i+2] = relu(torch.add(self.layers[0][:,:,i+1], self.layers[0][:,:,i+2]))
-
+        # nevermind, no more kron sums. we're using nn.Linear to handle propagation instead.
+        # ReLU can handle neuron activation and Tanh can handle neuron propensities.
         
-        self.outputs = torch.zeros(self.num_controls).to(dtype=torch.float64, device=self.device)
+        for i in range(0, self.depth - 1):
+            with torch.no_grad():
+                self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[3][:,:,i])
+                self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
+                self.lin.weight = torch.nn.Parameter(data=self.layers[2][:,:,i])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[4][:,:,i])
+                self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
+                self.layers[0][:,:,i+1] = self.relu(self.layers[0][:,:,i+1])
+        #self.layers[0] = self.layers[0].detach()
+            #torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
+
+        #for i in range(3, int((self.depth - 1)/2)):
+            #i = i * 2
+            #torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
+            #self.layers[0][:,:,i+2] = relu(torch.add(self.layers[0][:,:,i+1], self.layers[0][:,:,i+2]))
+
+        # calculate the output value with a softmax function over the output neurons
+        self.outputs = torch.zeros(self.num_controls).to(dtype=torch.float32, device=self.device)
         for i in range(0, self.num_controls):
             self.outputs[i] = self.layers[0][self.controls[i][0], self.controls[i][1], self.controls[i][2]].item()
         softmax = torch.nn.Softmax(dim=0)
         self.outputs = softmax(self.outputs)
         
         # update the threshold and signal layers
+        #lin2 = torch.nn.Linear(self.width * self.height * self.depth, self.width * self.height * self.depth, bias=True, dtype=torch.float32, device=self.device)
         for i in range (1, 5):
-            torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[0], self.layers[5 + 2*(i-1)]))), torch.add(self.layers[i], self.layers[6 + 2*(i-1)]), out=self.layers[0])
+            for j in range(0, self.depth - 1):
+                with torch.no_grad():
+                    self.lin.weight = torch.nn.Parameter(data=self.layers[5 + 2*(i-1)][:,:,j])
+                    self.lin.bias = torch.nn.Parameter(data=self.layers[6 + 2*(i-1)][:,:,j])
+                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+            #self.layers[i] = self.layers[i].detach()
+            #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[0], self.layers[5 + 2*(i-1)]))), torch.add(self.layers[i], self.layers[6 + 2*(i-1)]), out=self.layers[0])
 
         # update the emotion layers
         for i in range (5, 13):
-            torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 3)/2)], self.layers[(12 + (i - 5)*2)]))), torch.add(self.layers[int((i - 3)/2)], self.layers[(13 + (i - 5)*2)]), out=self.layers[i])
+            for j in range(0, self.depth - 1):
+                with torch.no_grad():
+                    self.lin.weight = torch.nn.Parameter(data=self.layers[13 + 2*(i-5)][:,:,j])
+                    self.lin.bias = torch.nn.Parameter(data=self.layers[14 + 2*(i-5)][:,:,j])
+                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+            #self.layers[i] = self.layers[i].detach()
+            #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 3)/2)], self.layers[(12 + (i - 5)*2)]))), torch.add(self.layers[int((i - 3)/2)], self.layers[(13 + (i - 5)*2)]), out=self.layers[i])
 
         # update the personality layers
         for i in range(13, 29):
-            torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 1) / 2)], self.layers[(29 + (i - 13)*2)]))), torch.add(self.layers[int((i - 1) / 2)], self.layers[(30 + (i - 13)*2)]), out=self.layers[i])
+            for j in range(0, self.depth - 1):
+                with torch.no_grad():
+                    self.lin.weight = torch.nn.Parameter(data=self.layers[29 + 2*(i-13)][:,:,j])
+                    self.lin.bias = torch.nn.Parameter(data=self.layers[30 + 2*(i-13)][:,:,j])
+                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+            #self.layers[i] = self.layers[i].detach()
+            #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 1) / 2)], self.layers[(29 + (i - 13)*2)]))), torch.add(self.layers[int((i - 1) / 2)], self.layers[(30 + (i - 13)*2)]), out=self.layers[i])
 
         print('layers[0]')
-        print(torch.shape(self.layers[0]))
+        print(self.layers[0].size())
         return self.outputs
 
     def backprop(self, guess, answer, constant=None):
@@ -1042,7 +1108,7 @@ class mouse():
         else:
             self.device = torch.device('cpu')
         return
-
+'''
     def save(self, path):
 
     def load(self, path):
@@ -1086,564 +1152,4 @@ class mouse():
 
     def backprop(self, guess, answer, constant = None):
 
-
-    def save(self, path):
-        '''
-        Save a model to a file.
-
-        :Parameters:
-        path (str): the path to the directory to save the model files
-
-        :Returns:
-        none
-        '''
-        if (os.path.exists(path) == False):
-            os.makedirs(path)
-        np.save(path + '/width', self.width)
-        np.save(path + '/height', self.height)
-        np.save(path + '/depth', self.depth)
-        np.save(path + '/bounds', self.bounds)
-        np.save(path + '/range_high', self.range_high)
-        np.save(path + '/range_low', self.range_low)
-        np.save(path + '/num_controls', self.num_controls) 
-        np.save(path + '/controls', self.controls)
-        np.save(path + '/num_sensations', self.num_sensations)
-        np.save(path + '/sensations', self.sensations)
-        torch.save(self.thresholds_pos, path + '/thresholds_pos.pth')
-        torch.save(self.thresholds_neg, path + '/thresholds_neg.pth')
-        for i in range(0, len(self.layers)):
-            torch.save(self.layers[i], path + '/layer' + str(i) + '.pth')
-        return
-    
-    def load(self, path):
-        '''
-        Load a model from a file.
-
-        :Parameters:
-        path (str): the path to the directory containing the model files
-
-        :Returns:
-        none
-        '''
-        self.__check_cuda()
-        self.width = np.load(path + '/width.npy')
-        print(self.width)
-        self.height = np.load(path + '/height.npy')
-        self.depth = np.load(path + '/depth.npy')
-        self.bounds = np.load(path + '/bounds.npy')
-        try:
-            self.bounds = self.bounds.item()
-        except:
-            print('error converting bounds to int')
-        self.range_high = np.load(path + '/range_high.npy')
-        self.range_low = np.load(path + '/range_low.npy')
-        self.num_controls = np.load(path + '/num_controls.npy')
-        self.controls = np.load(path + '/controls.npy')
-        self.num_sensations = np.load(path + '/num_sensations.npy')
-        self.sensations = np.load(path + '/sensations.npy')
-        self.thresholds_pos = torch.load(path + '/thresholds_pos.pth')
-        self.thresholds_neg = torch.load(path + '/thresholds_neg.pth')
-        for i in range(0, len(self.layers)):
-            dummy = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
-            dummy = torch.load(path + '/layer' + str(i) + '.pth')
-            self.layers.append(dummy)
-        
-        for i in range(0, 8):
-            self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
-
-        return
-        
-    def clear(self):
-        for i in range(0, 28):
-            self.layers[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
-        return
-        
-    def copy(self, model):
-        '''
-        Copy a model's parameters to a new model.
-        
-        :Parameters:
-        model (ferret): the model to copy
-        
-        :Returns:
-        none
-        '''
-        self.width = model.width
-        self.height = model.height
-        self.depth = model.depth
-        self.bounds = model.bounds
-        self.range_high = model.range_high
-        self.range_low = model.range_low
-        self.num_controls = model.num_controls
-        self.controls = model.controls
-        self.thresholds_pos = model.thresholds_pos
-        self.thresholds_neg = model.thresholds_neg
-        self.layers = []
-        for i in range(0, len(model.layers)):
-            self.layers.append(model.layers[i])
-        for i in range(0, 8):
-            self.firing[i] = torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device)
-        
-        return
-    
-    def create(self, params):    
-        '''
-        Create a new model with the given dimensions and number of controls.
-        
-        :Parameters: 
-        w (int): width of input images in pixels
-        h (int): height of input images in pixels
-        d (int): depth of the neural space
-        bounds (int): the range of values for the propensity to fire
-        num_controls (int): number of controls
-        num_sensations (int): number of sensations
-        
-        :Returns:
-        none
-        
-        :Comments:
-        This function creates a new, randomly initialized model with the dimensions and number of controls given.
-        Importantly, this model will only be able to accept images of the specified width and height.
-        The depth of the model determines its complexity. With more depth, the runtime and memory usage
-        also increase dramatically. The number of controls determines what outputs the model can have. If you want it to 
-        perform a certain task that requires, for instance, controlling 4 seperate keyboard keypresses, 
-        then you would want a model with 4 controls.
-        '''
-
-        self.__check_cuda()
-        self.width = params[0]
-        print('assigned width')
-        self.height = params[1]
-        print('assigned height')
-        self.depth = params[2]
-        print('assigned depth')
-        self.bounds = params[3]
-        print('assigned bounds')
-        self.num_controls = params[4]
-        print('assigned controls')
-        self.num_sensations = params[5]
-        print('assigned values')
-        self.__new_controls()
-        print('new controls')
-        self.__new_thresholds()
-        print('new thresholds')
-        self.__new_propensity()
-        print('new propensity')
-        self.__new_personality()
-        print('new personality')
-        self.__new_sensations()
-        print('new sensations')
-        return
-   
-    def __new_range(self, r): 
-        self.range_low = np.arctan(2*r/np.pi) + 2 
-        self.range_high = 1 / self.range_low
-        if (self.range_low > self.range_high):
-            self.range_low, self.range_high = self.range_high, self.range_low
-        return
-    
-    def __new_thresholds(self):
-        random_gen = torch.Generator(device=self.device)
-        random_gen.seed()
-        self.thresholds_pos = torch.tensor(data=1, device=self.device)
-        self.thresholds_neg = torch.tensor(data=1, device=self.device)
-        self.thresholds_pos = torch.rand(size=(self.num_controls, self.num_controls), generator=random_gen, device=self.device)
-        torch.add(torch.mul(self.thresholds_pos, self.bounds, out=self.thresholds_pos), 1, out=self.thresholds_pos)
-        random_gen.seed()
-        self.thresholds_neg = torch.rand(size=(self.num_controls, self.num_controls), generator=random_gen, device=self.device)
-        torch.subtract(-1, torch.divide(self.thresholds_neg, self.bounds, out=self.thresholds_neg), out=self.thresholds_neg)
-        return
-     
-    def __new_controls(self):
-        self.controls = []
-        for i in range(0, self.num_controls):
-            wegood = False
-            newctl = 0
-            while wegood == False:
-                newctl = (np.random.randint(low=1, high=self.width), np.random.randint(low=1, high=self.height), int((self.depth - 1) * .37))
-                wegood = True
-                for ctl in self.controls:
-                    if ctl == newctl:
-                        wegood = False
-            self.controls.append(newctl)
-        return
-
-    def __new_personality(self):
-            
-        '''
-        Initialize the model's personality layers.
-
-        :Parameters:
-        none
-
-        :Returns:
-        none
-
-        :Comments: 
-        the personality layers are the only parts of the model that don't change over time. we initialize all the layers here,
-        from layers[0] to emotion8 to personality8, but the personality layers we initialize to random values. These random values
-        should range from 1 to n for the positive personality layers, and 1 to 1/n for the negative personality layers. in order to 
-        achieve this, we first generate random values between 0 and 1, then for the positive layers we multiply by n and add 1, and for
-        the negative layers we divide by n and subtract from 1. This will give us the desired range of values for the personality layers.
-        '''
-        for i in range(0, 29):
-            self.layers.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
-        for i in range(29, 61):
-            random_gen = torch.Generator(device=self.device)
-            random_gen.seed()
-            self.layers.append(torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16))
-        
-        for i in range(0, 8):
-            self.firing.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
-        return
-    
-    def __new_propensity(self):
-        random_gen = torch.Generator(device=self.device)
-        random_gen.seed()
-        self.pos_propensity = torch.tensor(data=1, device=self.device)
-        self.neg_propensity = torch.tensor(data=1, device=self.device)
-        self.pos_propensity = torch.rand(size=(2,2), generator=random_gen, device=self.device)
-        self.pos_propensity = torch.add(torch.mul(self.pos_propensity, self.bounds, out=self.pos_propensity), 1).to(dtype=torch.int16)
-        self.pos_propensity = torch.subtract(self.pos_propensity, torch.divide(self.pos_propensity, 2).to(dtype=torch.int16), out=self.pos_propensity)
-        self.neg_propensity = torch.clone(self.pos_propensity)
-        return
-
-    def __new_sensations(self):
-        self.sensations = []
-        for i in range(0, self.num_sensations):
-            self.sensations.append((np.random.randint(low=1, high=self.width), np.random.randint(low=1, high=self.height), int(self.depth * .5)))
-        return
-
-    def __pos_sensation(self, sense_num, amt):
-        torch.add(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
-        return
-
-    def __neg_sensation(self, sense_num, amt):
-        torch.subtract(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
-        return
-    
-    def sense(self, sense_num, amt, pos):    
-        '''
-        Train the model by giving it feedback on its actions.
-
-        :Parameters:
-        sense_num (int): the index of the sensation neuron to train
-        amt (float): the amount to train the sensation neuron by
-        pos (bool): whether the sensation is positive or negative
-
-        :Returns:
-        none
-
-        :Comments: 
-        Call this function whenever the model either does something right or makes a mistake.
-        set pos to True if the sensation is positive, and False if the sensation is negative.
-        You'll need to set conditions in your game that call this function automatically while it's playing.
-        This function is also intended to be used later on in the training process, when the model is
-        being used by a user on real world tasks and needs feedback.
-        '''
-        if (pos):
-            self.__pos_sensation(sense_num, amt)
-        else:
-            self.__neg_sensation(sense_num, amt)
-        return
-
-    def permute(self, degree, fraction):        
-        '''
-        Permute the model's personality by a certain degree.
-
-        :Parameters:
-        degree (int): positive integer which increases how much the permutation changes the model
-        fraction (int): positive integer which lessens the degree of the permutation as it receives higher values
-
-        :Returns:
-        none
-
-        :Comments: 
-        You will absolutely need to trial and error with the degree to see what works best for your use case.
-        This function will enable iterating on the personality traits of a model which has already proven useful.
-        You'll want to use this to make small, incremental improvements to a model and then test it to see whether to move 
-        forward with the changes or roll back to a previous version.
-        
-        If you want the model to change quickly, set the degree to a high number, and the fraction to 1.
-        If you want the model to change slowly (and in most cases you will want this), set the degree to 1 and
-        the fraction to higher numbers. The higher fraction goes, the slower the model will change with each iteration.
-
-        Once a minimal working model has been found, this function will be what we primarily use to iterate on it.
-        '''
-        degree = 1 / fraction
-        model = ferret()
-        model.width = self.width
-        model.height = self.height
-        model.depth = self.depth
-        model.bounds = self.bounds
-        model.range_high = self.range_high
-        model.range_low = self.range_low
-        model.num_controls = self.num_controls
-        model.controls = self.controls
-        model.__new_thresholds()
-        model.__new_propensity()
-        torch.divide(model.thresholds_pos, fraction, out=model.thresholds_pos)
-        torch.divide(model.thresholds_neg, fraction, out=model.thresholds_neg)
-        torch.add(self.thresholds_pos, model.thresholds_pos, out=self.thresholds_pos)
-        torch.add(self.thresholds_neg, model.thresholds_neg, out=self.thresholds_neg)
-        for i in range(29, 61):
-            temp = torch.tensor(data=1, device=self.device)
-            random_gen = torch.Generator(device=self.device)
-            random_gen.seed()
-            temp = torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16)
-            temp = torch.divide(temp, fraction,).to(dtype=torch.int16)
-            self.layers[i] = torch.add(self.layers[i], model.layers[i], out=self.layers[i])
-        return
-
-    def update(self, input_image):
-        '''
-        Main control function for the model.
-
-        :Parameters:
-        input_image (tensor): the image to input into the model
-
-        :Returns:
-        take_action (list): a list of booleans representing whether the controls should be activated or not
-
-        :Comments: 
-        This function is what makes the model 'act'. It takes an image as input and processes it by firing neurons.
-        Usually a single image will not be enough to cause the model to take any action - you'll need to feed it a continuous
-        stream of images that the model can react to and see its reactions change things in the image, as well. This style of 
-        model doesn't work if it can't interact with its environment, so you'll need to have the model play a predefined game
-        of your design or choosing, otherwise it won't do anything useful. 
-
-        The game which you use or create should give the model a tensor image and then call this function to get the model's
-        next action. The model will then return a list of booleans, each representing whether each control it has should be activated or not.
-        It's up to you to make those controls do something in its environment.
-
-        Provided in this library are some simple example games to get you started. You can also look at the testing scripts to see how to 
-        implement them.
-        '''
-
-        self.outputs = torch.zeros(self.num_controls).to(dtype=torch.int16, device=self.device)
-
-        if (torch.is_tensor(input_image) == False):
-            return -1
-        # add in the input image
-        input_image.to(dtype=torch.int16, device=self.device)
-        input_tensor = torch.tensor(data=1, device=self.device)
-        
-        input_tensor = torch.clone(input_image, ).detach().to(dtype=torch.int16, device=self.device)
-
-
-        if input_tensor.ndim == 3:
-            torch.add(self.layers[0][:, :, 0],  input_tensor[0,:,:], out=self.layers[0][:, :, 0])
-            torch.add(self.layers[0][:, :, 1],  input_tensor[1,:,:], out=self.layers[0][:, :, 1])
-            torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
-        elif input_tensor.ndim == 2:
-            torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
-            print(self.layers[0][:, :, 0].shape)
-            print(input_tensor.shape)
-        else:
-            print("Unexpected number of input tensor dimensions!")
-
-        #check which neurons are firing and which arent, do the stuff
-        torch.greater(self.layers[0], self.layers[1], out=self.firing[0])
-        torch.less_equal(self.layers[0], self.layers[1], out=self.firing[1])
-        torch.less(self.layers[0], self.layers[2], out=self.firing[2])
-        torch.greater_equal(self.layers[0], self.layers[2], out=self.firing[3])
-
-        # keep track of the threshold values of the firing neurons
-        torch.multiply(self.firing[0], self.layers[1], out=self.firing[4])
-        torch.multiply(self.firing[2], self.layers[2], out=self.firing[5])
-        
-        #self.pos_fre_amt = torch.div(self.pos_fire_amt, 6).to(dtype=torch.int16)
-        #self.neg_fire_amt = torch.div(self.neg_fire_amt, 6).to(dtype=torch.int16)
-
-        # use the firing multipliers to change the output values of the firing neurons
-        torch.add(self.firing[0], self.layers[3], out=self.firing[6])
-        torch.sub(self.firing[2], self.layers[4], out=self.firing[7])
-
-        # apply the firing values to each of the near neighbors
-        temp = torch.zeros(size=(self.width, self.height, self.depth), device=self.device, dtype=torch.int16)
-        for i in range(0, 4):
-            torch.add(self.layers[0], torch.roll(self.firing[6], (-1 ** i), int(i/2)), out=temp)
-            torch.sub(self.layers[0], torch.roll(self.firing[7], (-1 ** i), int(i/2)), out=temp)
-        
-        # check the predefined output neurons to see if they're ready to fire
-        # if they are, then return the action(s) to take
-        for i in range(0, self.num_controls):
-            if (self.layers[0][self.controls[i][0], self.controls[i][1], self.controls[i][2]].item() > self.thresholds_pos[i, 0].item()):
-                self.outputs[i] = 1
-                self.layers[0][(self.controls[i][0], self.controls[i][1], self.controls[i][2])] = self.layers[0][(self.controls[i][0], self.controls[i][1], self.controls[i][2])].item() - self.thresholds_pos[i,0]
-            else:
-                if (self.layers[0][(self.controls[i][0], self.controls[i][1], self.controls[i][2])].item() > self.thresholds_neg[i,0].item()):
-                    self.outputs[i] = 0
-                else:
-                    self.outputs[i] = -1
-        
-        # update layers[0] by decrementing all the firing neurons by their firing amount
-        torch.sub(self.layers[0], self.firing[5], out=self.layers[0])
-        torch.sub(self.layers[0], self.firing[6], out=self.layers[0])
-
-        # update the threshold layers
-        for i in range(0, 8):
-            torch.add(torch.mul(self.firing[int(i/2)], self.layers[5 + i]), self.layers[int(i/2)], out=self.layers[int(i/2)])
-        
-        # figure out which emotions were used and which weren't
-        # and then update them according to the personality values
-        
-        for i in range(0, 16):
-            torch.add(torch.mul(self.firing[i % 4], self.layers[13 + i]), self.layers[int(i/4) + 5], out=self.layers[int(i/4) + 5])
-        
-        # now update the personality values according to their associated dna values
-        
-        for i in range(0, 32):
-            torch.add(torch.mul(self.firing[i % 4], self.layers[29 + i]), self.layers[int(i/2) + 13], out=self.layers[int(i/2) + 13])
-
-        return self.outputs
-
-    def backprop(self, guess, answer, constant = None):
-        '''
-        Backpropagation function
-
-        :Parameters:
-        answer (tensor): the correct answer to the model's output
-
-        :Returns:
-        none
-
-        :Comments:
-        This does not work like traditional backprop does. We have to sort of approximate the process of 
-        taking a gradient because this system is not differentiable over time. In fact, it's not even 
-        representable by a function in the first place. Only by its own algorith I believe. In order to
-        achieve the results we would get from backprop in a more usual neural network design, I think
-        we have to represent the gradient in a probability graph rather than a vector graph. Essentially,
-        we treat the actual results of the network as unknowably random, and predict the probability 
-        of a specific neuron firing based on the probability that the 6 neurons its in contact with
-        would have fired. We look at what would have needed to happen for each neuron to fire, and assign a 
-        probability to each of those things. Then we look at what actually happened and adjust the dna
-        values to try to move those probabilities closer to the results we need, rather than the results
-        we got.
-
-        The nice thing here is that we can use this backprop function immediately following a call to the
-        update function. This means all the data we need should be still in place and unchanged. First up
-        we identify which neuron(s) needed to fire, and which did not. Then we try to look at dna value
-        configurations that would have resulted in the correct firing state last turn. We adjust the dna
-        values of its 6 in-contact neurons to a state that would have resulted in the neuron firing... but
-        well, here's where things get complicated. The probability that these neurons fire depends on their
-        contact neurons as well. It starts to become prohibitively difficult to pick out a specific 
-        configuration that we want to shoot for when iterating over the whole network. Thus we need to nudge
-        neurons rather than set theto a specific value. If a neuron needed to fire and didn't, we can 
-        change the dna values of its contact neurons and then propagate out from them. This means that for each 
-        neuron that we need to change, we also need to change its own contact neurons. This will have a 
-        recursive effect on the origin neuron too, which is fine I think. 
-
-        Anyway, to lay out how this process will work: pick an output neuron and an answer that it should have
-        given but didn't. Nudge its contact neurons in a direction that would have increased the probability
-        of the output neuron firing. Then, treat each of those contact neurons as an output neuron that 
-        should have had a different answer, depending no what we needed from them. Nudge their contact neurons
-        appropriately too, then continue this process throughout the whole network.
-
-        How much a given neuron needs to be nudged should depend on its contribution to the probability 
-        of the output neuron firing. This will probably best be represented with a function that 
-        depends on the distance between the neurons actual value and the firing value it needed to get to.
-        If that value is closer, then the neuron was more likely to fire, and so was contributing more and
-        should be nudged more. Note that the contribution of the output neuron itself is the highest 
-        contribution of all, and so it should be nudged the most. 
-
-        Now, how can we implement this algorithm? We need to start from the output neuron and work outward
-        through the network. We'll need to iterate in steps that sort of add 3d layers on top of the part 
-        of the network we just nudged. The formual we want to use should look like: 
-        Nudge ~= k / ((On - Oa) * (Cn - Ca))
-        where k is some constant that we can manipulate, O is the output neuron and C is the contact 
-        neuron, and n subscript is the needed val while a subscript is the actual val.
-
-        One thing to note is that there are 4 states a neuron can potentially be in, and it will be in
-        2 of them at a time at all times. This means that there's two states we need to nudge towards:
-        the correct firing state and the correct resting state. These will be split between the positive
-        and negative states though, so we nudge to the right positive state and then the right negative state
-        seperately.
-
-        Ok, let's get to it I guess.
-        '''
-
-        # first, we pick an item from the output layer and compare it to its corresponding item in the answer key.
-        # if they match, cool, on to the next one. if they dont, nudge the dna values in an appropriate
-        # direction.
-        cons = 0.37
-        if constant != None: cons = constant
-        # ok, we need a normalizing factor here. 
-        # the problem is that the guess values range from 0 to N, but we need them in a distribution
-        # that has certain properties. namely, we need rangemin to be = to 1 / rangemax. and we need to 
-        # somehow get there from running softmax over the outputs array, so we're starting from a range
-        # of 0 to 1. the problem is, we need the average value of the outputs array to be 1. so, with
-        # softmax we're starting with an average of 0.5, so we can add 0.5 and then... do something 
-        # let me set up our requirements here...
-        # 
-        # min = 1/max
-        # dataavg = 1
-        # dataavg = sum(data) / len(data)
-        # .5 * N = 1 / 1.5 * N
-        # N(1) = 1
-        # N(0) = 1 /  N(1.5)
-        # N(1.5) = 1 / N(0)
-        # 
-
-        scalingconst = 1.15470053838
-        diff = torch.zeros(self.num_controls, device=self.device)
-        diff = torch.sub(answer, guess)
-        scalefactors = torch.Softmax(diff)
-        scalefactors = torch.add(scalefactors, 0.5)
-        scalefactors = torch.mul(scalefactors, scalingconst)
-
-        for i in range(0, len(self.outputs)):
-            if (guess[i] != answer[i]):
-                if guess[i] == 0: 
-                    cons = cons / 2
-                # if the output was 1 and it should have been 0, then we need to nudge the dna values
-                # of the contact neurons in the direction that would have made the output neuron not fire
-                # if (self.outputs[i] == 1):
-                # first, we need to find the contact neurons and nudge them in the right direction
-                # to make the output neuron not fire
-                '''
-                cons = 1
-                outx = self.controls[i][0]
-                outy = self.controls[i][1]
-                outz = self.controls[i][2]
-                dx = 1
-                dy = 0
-                dz = 0
-                # oloss should be the difference between the output neurons actual value and the closest value it could have had that would have satisfied the conditions we want, which in this case is for it to not fire.
-                # thus it should be the remaining value left after the neuron fired
-                oloss = self.layers[0][outx, outy, outz]
-                
-                # closs is a bit more complicated, its the values of the contact neuron and its dna that would have helped move the output neuron to the state it should have been in
-                # since the output fired when it shouldnt have, the closs should be something that would help minimize the oloss
-                # thus, when the output neuron shouldnt fire, the contact neurons shouldnt fire either... but only if their firing would have helped the output neuron not fire
-                # we will have to take the firing value of the contact neuron and 
-                closs1 = self.layers[0][(outx + dx), (outy + dy), (outz + dz)] * (self.positive_firing[(outx + dx), (outy + dy), (outz + dz)] 
-                closs2 = self.layers[0][(outx + dx), (outy + dy), (outz + dz)] * (self.posiitive_resting[(outx + dx), (outy + dy), (outa + dz)])
-                closs3 = self.layers[0][(outx + dx), (outy + dy), (outz + dz)] * (self.negative_firing[(outx + dx), (outy + dy), (outz + dz)])
-                closs4 = self.layers[0][(outx + dx), (outy + dy), (outz + dz)] * (self.negative_resting[(outx + dx), (outy + dy), (outz + dz)])
-
-                nudge1 = cons / (oloss * closs1)
-                nudge2 = cons / (oloss * closs2)
-                nudge3 = cons / (oloss * closs3)
-                nudge4 = cons / (oloss * closs4)
-
-                self.dna1[(outx + dx), (outy + dy), (outz + dz)] += nudge1
-                self.dna2[(outx + dx), (outy + dy), (outz + dz)] += nudge2
-                self.dna3[(outx + dx), (outy + dy), (outz + dz)] += nudge3
-                self.dna4[(outx + dx), (outy + dy), (outz + dz)] += nudge4
-                '''
-                # after this we just repeat this process across the entire network.
-                # thing is, this whole process is incredibly slow in native python
-                # we need to run this using tensors instead.
-                # it should look like this:
-
-                for i in range(0, 32):
-                    self.layers[29+i] = torch.add(torch.mul(scalefactors[i], self.layers[29+i], torch.mul(cons, torch.mul(self.layers[29+i], torch.mul(self.layers[0], self.firing[i % 4])))), ).to(dtype=torch.int16)
-
-                # and there we go! the only thing left to note is the inclusion of a scaling factor "cons" in the equations. you should be
-                # able to set cons to a value between 0 and 1 to slow down the backprop process's effect per use of the function.
-                # it wont work well if you set it above 1 since that could have unintended effects, and setting it to a negative value
-                # will just have the effect of driving the model's training further from the desired results instead. 
-            return
-
-
+'''
