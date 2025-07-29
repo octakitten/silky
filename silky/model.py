@@ -947,7 +947,7 @@ class hamster():
         # nevermind, no more kron sums. we're using nn.Linear to handle propagation instead.
         # ReLU can handle neuron activation and Tanh can handle neuron propensities.
         
-        for i in range(0, self.depth):
+        for i in range(0, self.depth - 1):
             with torch.no_grad():
                 self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
                 self.lin.bias = torch.nn.Parameter(data=self.layers[3][:,:,i])

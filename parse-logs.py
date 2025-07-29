@@ -3,7 +3,7 @@ import re
 from file_read_backwards import FileReadBackwards
 import pathlib
 
-main():
+def main():
 
     # read through all the log files written during model training and extract info about the victories
     # and saved models.
@@ -19,12 +19,12 @@ main():
                 lines.append(open_file.readline())
             for line in lines:
                 if phrase1.search(line):
-                    victories.append((lines[1], lines[3]))
+                    victories.append((lines[0], lines[2]))
 
     # then save that info to disk in a summary file which we can read later
-    # the lines in the summary file alternate between 
+    # the lines in the summary file contain first
     # the number of turns a victory took in the game
-    # and the number of iterations it took to find a winning model that run
+    # and then the number of iterations it took to find a winning model that run
     output = pathlib.Path("./logs/summary.txt")
     directory = pathlib.Path("./logs")
     backup = pathlib.Path("./logs/summary-prev.txt")
@@ -33,7 +33,9 @@ main():
         if output.exists():
             output.replace(backup)
         output.touch()
-        with output.open() as summary:
+        with open("logs/summary.txt", 'w') as summary:
             for entry in victories:
-                output.writeline(entry[0])
-                output.writeline(entry[1])
+                summary.write(entry[0] + entry[1] + "\n")
+
+if __name__ == "__main__":
+    main()
