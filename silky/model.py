@@ -922,8 +922,8 @@ class hamster():
         #torch.mul(input_tensor, self.bounds, out=input_tensor)
         #torch.add(input_tensor, torch.ones(size=input_image.size(), device=self.device), out=input_tensor)
         #print(input_tensor)
-        print('layers[0]')
-        print(self.layers[0].size())
+        #print('layers[0]')
+        #print(self.layers[0].size())
         try:
             with torch.no_grad():
                 torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
@@ -933,8 +933,8 @@ class hamster():
             with torch.no_grad():
                 torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
 
-        print('input tensor')
-        print(input_tensor.size())
+        #print('input tensor')
+        #print(input_tensor.size())
 
         # update layers[0] based on the arctan function we're using, as well as inputs from the threshold and signal layers
         #torch.add(torch.add(torch.atan(torch.add(self.layers[0], self.layers[1])), self.layers[3]), torch.add(torch.atan(torch.add(self.layers[0], self.layers[2])), self.layers[4]), out=self.layers[0])
@@ -947,7 +947,7 @@ class hamster():
         # nevermind, no more kron sums. we're using nn.Linear to handle propagation instead.
         # ReLU can handle neuron activation and Tanh can handle neuron propensities.
         
-        for i in range(0, self.depth - 1):
+        for i in range(0, self.depth):
             with torch.no_grad():
                 self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
                 self.lin.bias = torch.nn.Parameter(data=self.layers[3][:,:,i])
@@ -1005,8 +1005,8 @@ class hamster():
             #self.layers[i] = self.layers[i].detach()
             #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 1) / 2)], self.layers[(29 + (i - 13)*2)]))), torch.add(self.layers[int((i - 1) / 2)], self.layers[(30 + (i - 13)*2)]), out=self.layers[i])
 
-        print('layers[0]')
-        print(self.layers[0].size())
+        #print('layers[0]')
+        #print(self.layers[0].size())
         return self.outputs
 
     def backprop(self, guess, answer, constant=None):
