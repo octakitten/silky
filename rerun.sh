@@ -16,12 +16,12 @@ echo "Built package!"
 
 ## run the package test script and print to a logfile
 printf -v today '%(%Y%m%d)T' -1
+folder="logs/"
+mkdir -p "$folder"
 num=1
 filename=$today-log.txt
-while [ -e "$filename" ]; do
+while [ -e "$folder$filename" ]; do
 	printf -v filename '%s-%01d-log.txt' "$today" "$(( ++num ))"
 done
 echo 'Printing to logfile "%s"' "$filename"
-folder="logs/"
-mkdir -p "$folder"
 .venv/bin/python3 -m run.py > "$folder$filename"
