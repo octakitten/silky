@@ -56,6 +56,17 @@ extra-dependencies = [
   "mypy>=1.0.0",
 ]
 
+[tool.hatch.envs.defualt]
+features = [
+  "dependencies",
+]
+
+[tool.hatch.envs.dev]
+features = [
+  "dependencies",
+  "dev",
+]
+
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/silky tests}"
 
