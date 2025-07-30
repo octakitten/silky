@@ -11,12 +11,12 @@
 
 echo "Creating a virtual env..."
 
-python3 -m venv ./.venv
+python3 -m venv .venv
 
 echo "Created a Python virtual environment."
 echo "Installing Hatch..."
 
-./.venv/bin/pip3 install hatch
+.venv/bin/pip3 install hatch
 
 echo "Installed Hatch in virtual environment."
 echo "Building the Silky package..."
@@ -29,7 +29,7 @@ hatch build -t wheel $FOLDER
 echo "Built package in folder dist/"
 echo "Installing Silky to virtual env..."
 
-./.venv/bin/pip3 uninstall silky -y
-./.venv/bin/pip3 install ${FOLDER}silky-*.whl
+.venv/bin/pip3 uninstall silky -y
+.venv/bin/pip3 install ${FOLDER}silky-*.whl
 
 echo "Installed package Silky to virtual environment."
