@@ -27,5 +27,6 @@ jobs:
       with:
         pytest-coverage-path: coverage.txt
         junitxml-path: resultslog.xml
+        default-branch: develop
     - run: gh release delete develop -y --cleanup-tag
     - run: gh release create develop dist/silky-*.whl
