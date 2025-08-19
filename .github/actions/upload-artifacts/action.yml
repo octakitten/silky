@@ -13,8 +13,8 @@ runs:
     - name: Zip artifact
       shell: bash
       run: |
-        rm -f tests/artifacts/test-artifact.zip
-        zip -r "test-artifact.zip" tests/artifacts/ -i ${{ inputs.name }}
+        rm -f test-artifact.zip
+        zip -r "test-artifact.zip" tests/artifacts/
 
     - name: Store build artifacts on Github
       uses: actions/upload-artifact@v4
@@ -23,4 +23,4 @@ runs:
         name: test-artifact.zip
         retention-days: 7
         if-no-files-found: warn
-        path: tests/artifacts
+        path: .

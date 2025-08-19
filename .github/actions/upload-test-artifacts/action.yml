@@ -1,4 +1,4 @@
-name: Upload build artifacts
+name: Upload test artifacts
 
 description: Upload Pytest and other build artifacts
 
@@ -9,7 +9,7 @@ runs:
       shell: bash
       run: |
         rm -f test-reports.zip
-        zip -r "test-reports.zip" tests/reports -i tests/reports/resultslog.xml -i tests/reports/coverage.txt
+        zip -r test-reports.zip tests/reports
 
     - name: Store build artifacts on Github
       uses: actions/upload-artifact@v4
@@ -18,4 +18,4 @@ runs:
         name: test-reports.zip
         retention-days: 7
         if-no-files-found: warn
-        path: tests/reports/test-reports.zip
+        path: .

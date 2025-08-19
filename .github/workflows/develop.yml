@@ -28,7 +28,7 @@ jobs:
         name: dist/silky-*.whl
     - uses: MishaKav/pytest-coverage-comment@main
       with:
-        pytest-coverage-path: tests/reports/coverage.log
+        pytest-coverage-path: tests/reports/coverage.txt
         junitxml-path: tests/reports/resultslog.xml
     - run: gh release delete develop -y --cleanup-tag
     - run: gh release create develop dist/silky-*.whl
