@@ -1,3 +1,3 @@
-pip uninstall silky -y
-pip install ./dist_beta/*.whl
-pytest
+.venv/bin/pip3 uninstall silky -y
+.venv/bin/pip3 install ./dist_beta/*.whl
+.venv/bin/pytest

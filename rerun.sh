@@ -7,7 +7,7 @@ echo  "Building Silky package"
 FOLDER="dist/"
 rm -f $FOLDER*.whl
 rm -f $FOLDER*.tar.gz
-hatch build -t wheel $FOLDER
+.venv/bin/python3 -m hatch build -t wheel $FOLDER
 echo "Built package!"
 
 ## install the package
