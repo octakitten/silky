@@ -9,7 +9,7 @@ runs:
       shell: bash
       run: |
         rm -f test-reports.zip
-        zip -r test-reports.zip tests/reports
+        zip test-reports.zip -i coverage.txt -i resultslog.xml
 
     - name: Store build artifacts on Github
       uses: actions/upload-artifact@v4

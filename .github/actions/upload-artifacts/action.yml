@@ -14,7 +14,7 @@ runs:
       shell: bash
       run: |
         rm -f test-artifact.zip
-        zip -r "test-artifact.zip" tests/artifacts/
+        zip "test-artifact.zip" -i coverage.txt -i resultslog.xml
 
     - name: Store build artifacts on Github
       uses: actions/upload-artifact@v4
