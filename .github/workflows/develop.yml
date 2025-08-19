@@ -20,9 +20,6 @@ jobs:
     - run: rm -rf /.local/share/hatch
     - run: /venv/bin/hatch  env create
     - run: /venv/bin/hatch build -t wheel dist/
-    - uses: ./.github/actions/upload-artifacts
-      with:
-        name: dist/silky-*.whl
     - uses: ./.github/actions/run-pytest
       with:
         name: dist/silky-*.whl
