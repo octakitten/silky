@@ -15,13 +15,11 @@ If you'd like to build from source for some reason, maybe to understand how the 
 
 **1)** Clone the repository locally with Git.
 
-**2)** Install Hatch with Pipx or otherwise: https://hatch.pypa.io/1.13/install/
+**2)** Enter the upper level directory for the repo from your terminal and run the "install.sh" script.
 
-**3)** Enter the upper level directory for the repo from your terminal and run the "install.sh" script.
-
-**4)** You can then test local changes with a few options:
+**3)** You can then test local changes with a few options:
  - Run the "rerun.sh" script to rebuild the project locally and then run the "run_hamster()" function in the Iteration module. A model will be created and then iterated on as it plays a simple game where it navigates a player icon through a simple "forest" of obstacles. If it bumps into an obstacle, it loses, and if it reaches the goal, it wins.
- - Run the "test.sh" script to rebuild the project, again just locally, and then run run pytest to test the project's basic integrity. As of the writing of these edits, 7/29/2025, test coverage is incomplete.
+ - Run the "test.sh" script to rebuild the project, again just locally, and then run pytest to test the project's basic integrity. As of the writing of these edits, 7/29/2025, test coverage is incomplete.
  - Run the "train.sh" script to test the project on the Tiny ImageNet dataset. The model will train on categorizing various images in plain english until it achieves a certain level of accuracy.
 
 On the roadmap currently is setting up the project to test models on a simple version of the classic Aliens arcade game. I'd like to have it play other games like tetris in the future, as well as further testing on it's viability as a language model by testing it on more image classification tasks.

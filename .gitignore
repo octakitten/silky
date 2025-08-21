@@ -181,7 +181,6 @@ test_dir/
 indev-tests/
 tests/testing_stuff.py
 test/testingstuff2.py
-custom.py
 default/
 dist_beta/
 ferret_forest/
