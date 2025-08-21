@@ -909,6 +909,31 @@ class hamster():
         for i in range(0, 28):
             self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         return
+
+    def permute_small(self):
+        '''
+        Permute the model's dna by a very small amount.
+        
+        :Parameters:
+        none
+
+        :Returns:
+        none
+
+        :Comments:
+        Will change a random dna value by +1 or -1 at random. 
+        '''
+        dna_choice = torch.round(torch.randn(1) * 32)
+        item_choice = torch.randn(3)
+        layer_size = self.layers[dna_choice[0]].size()
+        item_size_choice = torch.mul(item_choice, layer_size)
+        item_sign = torch.round(torch.randn(1))
+        item_value = 1 - (2 * item_sign[0])
+        self.layers[29 + dna_choice][item_size_choice[0], item_size_choice[1], item_size_choice[2]] += item_value
+        return
+        
+
+
         
     def update(self, input_image):
         if (torch.is_tensor(input_image) == False):
