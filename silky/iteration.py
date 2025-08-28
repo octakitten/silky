@@ -405,8 +405,8 @@ def run_hamster():
               prev_iters = iters
               model.save(vic_path)
         if (iters < 5):
-              break
-        return
+            break
+    return iters
 
 def train_ferret():
     opts = tr.optionsobj("", None, "./ferrettest1/", 256, 256, 200, 50, 200, 2, 400)
@@ -422,6 +422,17 @@ def train_hamster():
     while (percent < .95):
         tr.train_hamster(opts)
         percent = tr.test_hamster(opts)
+    return
+
+def train_hamster_forest():
+    total_iters = 0
+    total_attempts = 0
+    while (True):
+        total_attempts += 1
+        total_iters += run_hamster()
+        if ((total_iters/total_attempts) < 5):
+            break
+    print("Consistency in output achieved! Average iterations per attempt is lower than 5!")
     return
 
 def run_ferret_forest_tracked():
