@@ -16,6 +16,9 @@ jobs:
       image: octakitten/silky-v02
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: main
+    - run: rm -rf /.local/share/hatch
     - run: /venv/bin/hatch env create
     - run: /venv/bin/hatch build -t wheel dist/
     - uses: ./.github/actions/run-pytest.yml
