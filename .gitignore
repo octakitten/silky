@@ -181,7 +181,6 @@ test_dir/
 indev-tests/
 tests/testing_stuff.py
 test/testingstuff2.py
-custom.py
 default/
 dist_beta/
 ferret_forest/
@@ -192,3 +191,8 @@ test2.sh
 testing01/
 *-log.txt
 *.txt
+aliens/latest/
+*.whl
+velvet/models/victory/
+velvet/models/in_progress/
+*.bak

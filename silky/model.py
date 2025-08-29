@@ -161,7 +161,7 @@ class ferret():
         
         return
     
-    def create(self, width, height, depth, bounds, num_controls, num_sensations):    
+    def create(self, params):    
         '''
         Create a new model with the given dimensions and number of controls.
         
@@ -184,18 +184,19 @@ class ferret():
         perform a certain task that requires, for instance, controlling 4 seperate keyboard keypresses, 
         then you would want a model with 4 controls.
         '''
+
         self.__check_cuda()
-        self.width = width
+        self.width = params[0]
         print('assigned width')
-        self.height = height
+        self.height = params[1]
         print('assigned height')
-        self.depth = depth
+        self.depth = params[2]
         print('assigned depth')
-        self.bounds = bounds
+        self.bounds = params[3]
         print('assigned bounds')
-        self.num_controls = num_controls
+        self.num_controls = params[4]
         print('assigned controls')
-        self.num_sensations = num_sensations
+        self.num_sensations = params[5]
         print('assigned values')
         self.__new_controls()
         print('new controls')
@@ -260,14 +261,14 @@ class ferret():
         achieve this, we first generate random values between 0 and 1, then for the positive layers we multiply by n and add 1, and for
         the negative layers we divide by n and subtract from 1. This will give us the desired range of values for the personality layers.
         '''
-        for i in range(0, 61):
+        for i in range(0, 29):
             self.layers.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         for i in range(29, 61):
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
             self.layers.append(torch.multiply(other=self.pos_propensity[0,0], input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device))).to(dtype=torch.int16))
         
-        for i in range(0, 7):
+        for i in range(0, 8):
             self.firing.append(torch.zeros((self.width, self.height, self.depth), dtype=torch.int16, device=self.device))
         return
     
@@ -411,8 +412,8 @@ class ferret():
             torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
         elif input_tensor.ndim == 2:
             torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
-            print(self.layers[0][:, :, 0].shape)
-            print(input_tensor.shape)
+            print(self.layers[0][:, :, 0].size())
+            print(input_tensor.size())
         else:
             print("Unexpected number of input tensor dimensions!")
 
@@ -647,6 +648,9 @@ class hamster():
     layers = []
 
     outputs = 0
+    relu = torch.nn.ReLU()
+    lin = None
+    tanh = torch.nn.Tanh()
 
     def __check_cuda(self):
         if torch.cuda.is_available():
@@ -660,19 +664,20 @@ class hamster():
         self.__check_cuda()
         return
 
-    def create(self, width, height, depth, bounds, num_controls, num_sensations):
+    def create(self, params):
+        # params: width, height, depth, bounds, num_controls, num_sensations
         self.__check_cuda()
-        self.width = width
+        self.width = params[0]
         print('assigned width')
-        self.height = height
+        self.height = params[1]
         print('assigned height')
-        self.depth = depth
+        self.depth = params[2]
         print('assigned depth')
-        self.bounds = bounds
+        self.bounds = params[3]
         print('assigned bounds')
-        self.num_controls = num_controls
+        self.num_controls = params[4]
         print('assigned controls')
-        self.num_sensations = num_sensations
+        self.num_sensations = params[5]
         print('assigned values')
         self.__new_controls()
         print('new controls')
@@ -684,6 +689,7 @@ class hamster():
         print('new personality')
         self.__new_sensations()
         print('new sensations')
+        self.lin = torch.nn.Linear(self.width * self.height, self.width * self.height, bias=True, dtype=torch.float32, device=self.device)
 
         return
 
@@ -717,11 +723,11 @@ class hamster():
     def __new_dna(self):
         for i in range(0, 61):
             self.layers.append(torch.tensor(data=1, device=self.device))
-            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         for i in range(29, 61):
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
-            self.layers[i] = torch.multiply(other=self.pos_propensity, input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device)))
+            self.layers[i] = torch.multiply(other=self.pos_propensity, input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float32, device=self.device)))
 
     def save(self, path):
         np.save(path + '/width', self.width)
@@ -752,7 +758,6 @@ class hamster():
         self.control_thresholds_neg = torch.load(path + '/control_thresholds_neg.pth')
         self.layers = []
         for i in range(0, 61):
-
             self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
         return
         
@@ -765,7 +770,7 @@ class hamster():
         torch.add(torch.mul(self.control_thresholds_pos, self.pos_propensity, out=self.control_thresholds_pos), 1, out=self.control_thresholds_pos)
         random_gen.seed()
         self.control_thresholds_neg = torch.rand(size=(self.num_controls, self.num_controls), generator=random_gen, device=self.device)
-        torch.subtract(-1, torch.divide(self.control_thresholds_neg, self.neg_propensity, out=self.control_thresholds_neg), out=self.control_thresholds_neg)
+        torch.subtract(-1, torch.mul(self.control_thresholds_neg, self.neg_propensity, out=self.control_thresholds_neg), out=self.control_thresholds_neg)
         return
 
     def __new_sensations(self):
@@ -775,11 +780,38 @@ class hamster():
         return
 
     def __pos_sensation(self, sense_num, amt):
-        torch.add(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
+        with torch.no_grad():
+            torch.add(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
         return
 
     def __neg_sensation(self, sense_num, amt):
-        torch.subtract(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
+        with torch.no_grad():
+            torch.subtract(self.layers[0][self.sensations[sense_num]], amt, out=self.layers[0][self.sensations[sense_num]])
+        return
+    
+    def sense(self, sense_num, amt, pos):    
+        '''
+        Train the model by giving it feedback on its actions.
+
+        :Parameters:
+        sense_num (int): the index of the sensation neuron to train
+        amt (float): the amount to train the sensation neuron by
+        pos (bool): whether the sensation is positive or negative
+
+        :Returns:
+        none
+
+        :Comments: 
+        Call this function whenever the model either does something right or makes a mistake.
+        set pos to True if the sensation is positive, and False if the sensation is negative.
+        You'll need to set conditions in your game that call this function automatically while it's playing.
+        This function is also intended to be used later on in the training process, when the model is
+        being used by a user on real world tasks and needs feedback.
+        '''
+        if (pos):
+            self.__pos_sensation(sense_num, amt)
+        else:
+            self.__neg_sensation(sense_num, amt)
         return
 
     def copy(self, model):
@@ -807,7 +839,7 @@ class hamster():
 
     def clear(self):
         for i in range(0, 28):
-            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         return
     
     def train(self, sense_num, amt, pos):    
@@ -835,7 +867,7 @@ class hamster():
             self.__neg_sensation(sense_num, amt)
         return
 
-    def permute(self, fraction):        
+    def permute(self, fraction):
         '''
         Permute the model's personality by a certain degree.
 
@@ -868,21 +900,46 @@ class hamster():
         torch.add(self.control_thresholds_neg, threshn, out=self.control_thresholds_neg)
 
         for i in range(29, 61):
-            temp = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            temp = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
             random_gen = torch.Generator(device=self.device)
             random_gen.seed()
-            torch.multiply(input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float64, device=self.device)), other=self.pos_propensity, out=temp)
+            torch.multiply(input=torch.sub(other=0.5, input=torch.rand(size=(self.width, self.height, self.depth), generator=random_gen, dtype=torch.float32, device=self.device)), other=self.pos_propensity, out=temp)
             torch.divide(temp, fraction, out=temp)
             torch.add(self.layers[i], temp, out=self.layers[i])
         for i in range(0, 28):
-            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float64, device=self.device)
+            self.layers[i] = torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device)
         return
+
+    def permute_small(self):
+        '''
+        Permute the model's dna by a very small amount.
+        
+        :Parameters:
+        none
+
+        :Returns:
+        none
+
+        :Comments:
+        Will change a random dna value by +1 or -1 at random. 
+        '''
+        dna_choice = torch.round(torch.randn(1) * 32)
+        item_choice = torch.randn(3)
+        layer_size = self.layers[dna_choice[0]].size()
+        item_size_choice = torch.mul(item_choice, layer_size)
+        item_sign = torch.round(torch.randn(1))
+        item_value = 1 - (2 * item_sign[0])
+        self.layers[29 + dna_choice][item_size_choice[0], item_size_choice[1], item_size_choice[2]] += item_value
+        return
+        
+
+
         
     def update(self, input_image):
         if (torch.is_tensor(input_image) == False):
             return -1
         # add in the input image
-        input_image.to(dtype=torch.float64, device=self.device)
+        input_image.to(dtype=torch.float32, device=self.device)
         input_tensor = torch.tensor(input_image, device=self.device)
         #print(input_image.device)
         #print(input_tensor)
@@ -890,71 +947,91 @@ class hamster():
         #torch.mul(input_tensor, self.bounds, out=input_tensor)
         #torch.add(input_tensor, torch.ones(size=input_image.size(), device=self.device), out=input_tensor)
         #print(input_tensor)
-        print('layers[0]')
-        #print(self.layers[0])
+        #print('layers[0]')
+        #print(self.layers[0].size())
         try:
-            torch.add(self.layers[0][:, :, 0],  input_tensor[0, :, :], out=self.layers[0][:, :, 0])
-            torch.add(self.layers[0][:, :, 1],  input_tensor[1, :, :], out=self.layers[0][:, :, 1])
-            torch.add(self.layers[0][:, :, 2],  input_tensor[2, :, :], out=self.layers[0][:, :, 2])
+            with torch.no_grad():
+                torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
+                torch.add(self.layers[0][:, :, 1],  input_tensor, out=self.layers[0][:, :, 1])
+                torch.add(self.layers[0][:, :, 2],  input_tensor, out=self.layers[0][:, :, 2])
         except:
-            torch.add(self.layers[0][:, :, 0],  input_tensor[0, :, :], out=self.layers[0][:, :, 0])
+            with torch.no_grad():
+                torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
 
-        print('input tensor')
-        print(input_tensor)
+        #print('input tensor')
+        #print(input_tensor.size())
 
         # update layers[0] based on the arctan function we're using, as well as inputs from the threshold and signal layers
-        torch.add(torch.add(torch.atan(torch.add(self.layers[0], self.layers[1])), self.layers[3]), torch.add(torch.atan(torch.add(self.layers[0], self.layers[2])), self.layers[4]), out=self.layers[0])
+        #torch.add(torch.add(torch.atan(torch.add(self.layers[0], self.layers[1])), self.layers[3]), torch.add(torch.atan(torch.add(self.layers[0], self.layers[2])), self.layers[4]), out=self.layers[0])
 
-        # do some rolls to simulate neurons sending messages to each other
-        '''
-        temp = torch.zeros(size=(self.width, self.height, self.depth), device=self.device, dtype=torch.float64)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 2), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 2), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 0), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 1), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], 1, 2), out=temp)
-        torch.add(self.layers[0], torch.roll(self.layers[0], -1, 2), out=temp)
-        torch.add(self.layers[0], temp, out=self.layers[0])
-        '''
         # so we're going to try using kron sums again... i want to propagate information forward from the input images through the whole network
         # in one go... i think this way we can get results faster per turn than having to wait for the model to slowly propagate information through
         # layer0...
         # its going to be more resource intensive but i think in the long run it wont actually slow the overall process down.
-        for i in range(0, 3):
-            torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)])), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
 
-        for i in range(3, int((self.depth - 1)/2)):
-            i = i * 2
-            torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)])), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
-            torch.add(self.layers[0][:,:,i+1], self.layers[0][:,:,(i+2)], out=self.layers[0][:,:,i+2])
-
+        # nevermind, no more kron sums. we're using nn.Linear to handle propagation instead.
+        # ReLU can handle neuron activation and Tanh can handle neuron propensities.
         
-        self.outputs = torch.zeros(self.num_controls).to(dtype=torch.float64, device=self.device)
+        for i in range(0, self.depth - 1):
+            with torch.no_grad():
+                self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[3][:,:,i])
+                self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
+                self.lin.weight = torch.nn.Parameter(data=self.layers[2][:,:,i])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[4][:,:,i])
+                self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
+                self.layers[0][:,:,i+1] = self.relu(self.layers[0][:,:,i+1])
+        #self.layers[0] = self.layers[0].detach()
+            #torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
+
+        #for i in range(3, int((self.depth - 1)/2)):
+            #i = i * 2
+            #torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])
+            #self.layers[0][:,:,i+2] = relu(torch.add(self.layers[0][:,:,i+1], self.layers[0][:,:,i+2]))
+
+        # calculate the output value with a softmax function over the output neurons
+        self.outputs = torch.zeros(self.num_controls).to(dtype=torch.float32, device=self.device)
         for i in range(0, self.num_controls):
             self.outputs[i] = self.layers[0][self.controls[i][0], self.controls[i][1], self.controls[i][2]].item()
         softmax = torch.nn.Softmax(dim=0)
         self.outputs = softmax(self.outputs)
         
         # update the threshold and signal layers
+        #lin2 = torch.nn.Linear(self.width * self.height * self.depth, self.width * self.height * self.depth, bias=True, dtype=torch.float32, device=self.device)
         for i in range (1, 5):
-            torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[0], self.layers[5 + 2*(i-1)]))), torch.add(self.layers[i], self.layers[6 + 2*(i-1)]), out=self.layers[0])
+            for j in range(0, self.depth - 1):
+                with torch.no_grad():
+                    self.lin.weight = torch.nn.Parameter(data=self.layers[5 + 2*(i-1)][:,:,j])
+                    self.lin.bias = torch.nn.Parameter(data=self.layers[6 + 2*(i-1)][:,:,j])
+                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+            #self.layers[i] = self.layers[i].detach()
+            #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[0], self.layers[5 + 2*(i-1)]))), torch.add(self.layers[i], self.layers[6 + 2*(i-1)]), out=self.layers[0])
 
         # update the emotion layers
         for i in range (5, 13):
-            torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 3)/2)], self.layers[(12 + (i - 5)*2)]))), torch.add(self.layers[int((i - 3)/2)], self.layers[(13 + (i - 5)*2)]), out=self.layers[i])
+            for j in range(0, self.depth - 1):
+                with torch.no_grad():
+                    self.lin.weight = torch.nn.Parameter(data=self.layers[13 + 2*(i-5)][:,:,j])
+                    self.lin.bias = torch.nn.Parameter(data=self.layers[14 + 2*(i-5)][:,:,j])
+                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+            #self.layers[i] = self.layers[i].detach()
+            #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 3)/2)], self.layers[(12 + (i - 5)*2)]))), torch.add(self.layers[int((i - 3)/2)], self.layers[(13 + (i - 5)*2)]), out=self.layers[i])
 
         # update the personality layers
         for i in range(13, 29):
-            torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 1) / 2)], self.layers[(29 + (i - 13)*2)]))), torch.add(self.layers[int((i - 1) / 2)], self.layers[(30 + (i - 13)*2)]), out=self.layers[i])
+            for j in range(0, self.depth - 1):
+                with torch.no_grad():
+                    self.lin.weight = torch.nn.Parameter(data=self.layers[29 + 2*(i-13)][:,:,j])
+                    self.lin.bias = torch.nn.Parameter(data=self.layers[30 + 2*(i-13)][:,:,j])
+                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+            #self.layers[i] = self.layers[i].detach()
+            #torch.add(torch.atan(torch.add(self.layers[i], torch.add(self.layers[int((i - 1) / 2)], self.layers[(29 + (i - 13)*2)]))), torch.add(self.layers[int((i - 1) / 2)], self.layers[(30 + (i - 13)*2)]), out=self.layers[i])
 
-        print('layers[0]')
-        print(self.layers[0])
+        #print('layers[0]')
+        #print(self.layers[0].size())
         return self.outputs
 
     def backprop(self, guess, answer, constant=None):
@@ -1010,3 +1087,94 @@ class hamster():
                 for k in range(29, 61):
                     torch.mul(self.layers[k], torch.mul(torch.div(cons, torch.mul(torch.pow(torch.abs(self.layers[0]), .5), torch.pow(torch.abs(self.layers[k]), .5))), (1 - diff)), out=self.layers[k])
         return
+
+class mouse():
+    # cuda device
+    device = -1
+
+    # starting parameters
+    width = 255
+
+    bounds = 0
+
+    maleability = 1.1
+
+    range_high = 2.0
+    range_low = 0.5
+
+    num_controls = 0
+    controls = []
+
+    thresholds_positive = []
+    thresholds_megative = []
+
+    num_sensations = 0
+    sensations = []
+
+    layers = []
+    firing = []
+
+    propensity_positive = 0
+    propensity_negative = 0
+
+    propensity = 0
+    outputs = 0
+
+    def __init__(self):
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
+        return
+
+    def __check_cuda(self):
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
+        return
+'''
+    def save(self, path):
+
+    def load(self, path):
+
+    def clear(self):
+
+    def copy(self, model):
+        
+    def create(self, params):
+
+    def __new_thresholds(self):
+
+    def __new_controls(self):
+
+    def __new_personality(self):
+
+    def __new_propensity(self):
+        random_gen = torch.Generator(device=self.device)
+        random_gen.seed()
+        self.pos_propensity = torch.tensor(data=1, device=self.device)
+        self.neg_propensity = torch.tensor(data=1, device=self.device)
+        self.pos_propensity = torch.rand(size=(2,2), generator=random_gen, device=self.device)
+        self.pos_propensity = torch.add(torch.mul(self.pos_propensity, self.bounds, out=self.pos_propensity), 1)
+        self.pos_propensity = torch.subtract(self.pos_propensity, torch.divide(self.pos_propensity, 2), out=self.pos_propensity)
+        self.neg_propensity = torch.clone(self.pos_propensity)
+        self.pos_propensity = self.pos_propensity[0][0]
+        self.neg_propensity = self.neg_propensity[0][0]
+        return
+
+    def __new_sensations(self):
+
+    def __positive_sensations(self, sense_num, amount):
+
+    def __negative_sensations(self, sense_num, amount):
+
+    def sense(self, sense_num, amount, positive):
+
+    def permute(self, degree):
+
+    def update(self, input_array):
+
+    def backprop(self, guess, answer, constant = None):
+
+'''

@@ -1,11 +1,11 @@
 import sys
 import os
 import pytest
+import silky
 #sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from silky import Forest
+from silky import forest
 
 
-@pytest.fixture
 def model_params():
     return (
             256,
@@ -13,24 +13,19 @@ def model_params():
             50,
             100,
             6,
-            2)
+            3)
 
-@pytest.fixture
-def forest(model_params):
-    return Forest(model_params())
-
-def test_forest_init(forest(model_params)):
-    assert forest.blob == type(mdl.ferret)
-    assert forest.victory_x >= 0
-    assert forest.victory_y >= 0
-    assert forest.victory_x <= model_params[0]
-    assert forest.victory_y <= model_params[1]
-    assert forest.starting_x >= 0
-    assert forest.starting_y >= 0
-    assert forest.starting_x <= model_params[0]
-    assert forest.starting_y <= model_params[1]
-    assert forest.width == model_params[0]
-    assert forest.height == model_params[1]
-
-def test_forest_play_game(forest(model_params)):
-    assert forest.play_game() is Bool
+def test_forest_init():
+    game = forest.forest(model_params())
+    #assert game.blob == type(mdl.ferret)
+    assert game.victory_x >= 0
+    assert game.victory_y >= 0
+    assert game.victory_x <= model_params()[0]
+    assert game.victory_y <= model_params()[1]
+    assert game.starting_x >= 0
+    assert game.starting_y >= 0
+    assert game.starting_x <= model_params()[0]
+    assert game.starting_y <= model_params()[1]
+    assert game.width == model_params()[0]
+    assert game.height == model_params()[1]
+    assert game.play_game() is Bool

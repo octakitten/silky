@@ -35,13 +35,32 @@ class forest():
     
     
     #initializing the game requires giving it a model to play with
-    def __init__(self, params, path=None):
-        if path==None:
-            self.blob = mdl.ferret()
-            self.blob.create(params[0], params[1], params[2], params[3], params[4], params[5])
+    def __init__(self, params=None, type=None, path=None, model=None):
+        if model is not None:
+            self.blob = model
         else:
-            self.blob = mdl.ferret()
-            self.blob.load(path)
+            if params is None:
+                raise ValueError("You must provide a model or parameters to create a new model.")
+            if path==None:
+                if type == 'ferret':
+                    self.blob = mdl.ferret()
+                    self.blob.create(params)
+                elif type == 'hamster':
+                    self.blob = mdl.hamster()
+                    self.blob.create(params)
+                else:
+                    self.blob = mdl.ferret()
+                    self.blob.create(params)
+            else:
+                if type == 'ferret':
+                    self.blob = mdl.ferret()
+                    self.blobl.load(path)
+                elif type == 'hamster':
+                    self.blob = mdl.hamster()
+                    self.blobl.load(path)
+                else:
+                    self.blob = mdl.ferret()
+                    self.blob.load(path)
         self.width = self.blob.width
         self.height = self.blob.height
         self.__create_starting_screen()
@@ -96,7 +115,7 @@ class forest():
         return
     
     def __create_starting_screen(self):
-        self.game_screen = torch.add(torch.zeros((self.width, self.height), device=torch.device('cuda'), dtype=torch.int16), self.tile)
+        self.game_screen = torch.add(torch.zeros((self.width, self.height), device=self.blob.device, dtype=torch.int16), self.tile)
         self.__create_forest()
         return
     

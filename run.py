@@ -1,4 +1,4 @@
 import silky
 from silky import iteration
 
-silky.iteration.run_ferret_forest()
+silky.iteration.train_hamster_forest()

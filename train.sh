@@ -1,4 +1,4 @@
 
-pip uninstall silky -y
-pip install ./dist_beta/*.whl
-python3 custom.py
+.venv/bin/pip uninstall silky -y
+.venv/bin/pip install ./dist_beta/*.whl
+.venv/bin/python3 custom.py

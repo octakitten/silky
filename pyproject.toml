@@ -27,6 +27,7 @@ dependencies = [
     "coverage>=7.6.0",
     "pytest-cov>=6.0.0",
     "pygame>=2.6.0",
+    "file-read-backwards>=3.0.0",
 ]
 
 [project.packages]
@@ -55,8 +56,22 @@ extra-dependencies = [
   "mypy>=1.0.0",
 ]
 
+[tool.hatch.envs.defualt]
+features = [
+  "dependencies",
+]
+
+[tool.hatch.envs.dev]
+features = [
+  "dependencies",
+  "dev",
+]
+
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/silky tests}"
+
+[tool.hatch.dirs.env]
+virtual = ".hatch"
 
 [tool.coverage.run]
 source_pkgs = ["silky", "tests"]

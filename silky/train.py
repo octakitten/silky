@@ -147,7 +147,7 @@ def train(options):
             mdl.load(progpath)
         except:
             try:
-                mdl.create(options.height, options.width, options.depth, options.bounds, options.controls, options.senses) 
+                mdl.create((options.height, options.width, options.depth, options.bounds, options.controls, options.senses)) 
             except:
                 raise ValueError("Unable to create or load a model! Maybe try setting the model options with the options object.")
              
@@ -348,7 +348,7 @@ def train_hamster(options):
             mdl.load(progpath)
         except:
             try:
-                mdl.create(options.height, options.width, options.depth, options.bounds, options.controls, options.senses) 
+                mdl.create((options.height, options.width, options.depth, options.bounds, options.controls, options.senses)) 
             except:
                 raise ValueError("Unable to create or load a model! Maybe try setting the model options with the options object.")
              

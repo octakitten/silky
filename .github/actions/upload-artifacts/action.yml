@@ -1,0 +1,26 @@
+name: Upload build artifacts
+
+description: Upload Pytest and other build artifacts
+
+inputs:
+  name:
+    description: Name of the artifact to upload
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Zip artifact
+      shell: bash
+      run: |
+        rm -f test-artifact.zip
+        zip "test-artifact.zip" -i coverage.txt -i resultslog.xml
+
+    - name: Store build artifacts on Github
+      uses: actions/upload-artifact@v4
+      continue-on-error: true
+      with:
+        name: test-artifact.zip
+        retention-days: 7
+        if-no-files-found: warn
+        path: .

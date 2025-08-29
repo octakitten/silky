@@ -1,0 +1,32 @@
+name: Silky Development Wheel Release
+
+on: 
+  push:
+    branches:
+      - develop
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  build-linux:
+    runs-on: [self-hosted, linux, x64]
+    container:
+      image: octakitten/silky-v02
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: develop
+    - run: rm -rf /.local/share/hatch
+    - run: /venv/bin/hatch  env create
+    - run: /venv/bin/hatch build -t wheel dist/
+    - uses: ./.github/actions/run-pytest
+      with:
+        name: dist/silky-*.whl
+    - uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-coverage-path: coverage.txt
+        junitxml-path: resultslog.xml
+        default-branch: develop
+    - run: gh release delete develop -y --cleanup-tag
+    - run: gh release create develop dist/silky-*.whl
