@@ -13,6 +13,7 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     container:
       image: octakitten/silky-v02
+      options: --priviledged
     steps:
     - uses: actions/checkout@v4
       with:
