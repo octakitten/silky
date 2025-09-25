@@ -191,7 +191,6 @@ test2.sh
 testing01/
 *-log.txt
 *.txt
-aliens/latest/
 *.whl
 velvet/models/victory/
 velvet/models/in_progress/
