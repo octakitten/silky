@@ -1143,6 +1143,7 @@ class mouse():
     def copy(self, model):
         
     def create(self, params):
+        self.lin = torch.nn.Linear(self.width * self.height, self.width * self.height, bias=True, dtype=torch.float32, device=self.device)
 
     def __new_thresholds(self):
 
@@ -1174,6 +1175,7 @@ class mouse():
     def permute(self, degree):
 
 '''
+    @torch.no_grad()
     def update(self, input_image):
         if (torch.is_tensor(input_image) == False):
             return -1
@@ -1181,13 +1183,11 @@ class mouse():
         input_image.to(dtype=torch.float32, device=self.device)
         input_tensor = torch.tensor(input_image, device=self.device)
         try:
-            with torch.no_grad():
-                torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
-                torch.add(self.layers[0][:, :, 1],  input_tensor, out=self.layers[0][:, :, 1])
-                torch.add(self.layers[0][:, :, 2],  input_tensor, out=self.layers[0][:, :, 2])
+            torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
+            torch.add(self.layers[0][:, :, 1],  input_tensor, out=self.layers[0][:, :, 1])
+            torch.add(self.layers[0][:, :, 2],  input_tensor, out=self.layers[0][:, :, 2])
         except:
-            with torch.no_grad():
-                torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
+            torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
 
 
         # update layers[0] based on the arctan function we're using, as well as inputs from the threshold and signal layers
@@ -1196,14 +1196,13 @@ class mouse():
         # ReLU can handle neuron activation and Tanh can handle neuron propensities.
         
         for i in range(0, self.depth - 1):
-            with torch.no_grad():
-                self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
-                self.lin.bias = torch.nn.Parameter(data=self.layers[3][:,:,i])
-                self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
-                self.lin.weight = torch.nn.Parameter(data=self.layers[2][:,:,i])
-                self.lin.bias = torch.nn.Parameter(data=self.layers[4][:,:,i])
-                self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
-                self.layers[0][:,:,i+1] = self.relu(self.layers[0][:,:,i+1])
+            self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
+            self.lin.bias = torch.nn.Parameter(data=self.layers[3][:,:,i])
+            self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
+            self.lin.weight = torch.nn.Parameter(data=self.layers[2][:,:,i])
+            self.lin.bias = torch.nn.Parameter(data=self.layers[4][:,:,i])
+            self.layers[0][:,:,i+1] = self.lin(self.layers[0][:,:,i])
+            self.layers[0][:,:,i+1] = self.relu(self.layers[0][:,:,i+1])
 
         # calculate the output value with a softmax function over the output neurons
         self.outputs = torch.zeros(self.num_controls).to(dtype=torch.float32, device=self.device)
@@ -1215,29 +1214,26 @@ class mouse():
         # update the threshold and signal layers
         for i in range (1, 5):
             for j in range(0, self.depth - 1):
-                with torch.no_grad():
-                    self.lin.weight = torch.nn.Parameter(data=self.layers[5 + 2*(i-1)][:,:,j])
-                    self.lin.bias = torch.nn.Parameter(data=self.layers[6 + 2*(i-1)][:,:,j])
-                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
-                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+                self.lin.weight = torch.nn.Parameter(data=self.layers[5 + 2*(i-1)][:,:,j])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[6 + 2*(i-1)][:,:,j])
+                self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
 
         # update the emotion layers
         for i in range (5, 13):
             for j in range(0, self.depth - 1):
-                with torch.no_grad():
-                    self.lin.weight = torch.nn.Parameter(data=self.layers[13 + 2*(i-5)][:,:,j])
-                    self.lin.bias = torch.nn.Parameter(data=self.layers[14 + 2*(i-5)][:,:,j])
-                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
-                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+                self.lin.weight = torch.nn.Parameter(data=self.layers[13 + 2*(i-5)][:,:,j])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[14 + 2*(i-5)][:,:,j])
+                self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
 
         # update the personality layers
         for i in range(13, 29):
             for j in range(0, self.depth - 1):
-                with torch.no_grad():
-                    self.lin.weight = torch.nn.Parameter(data=self.layers[29 + 2*(i-13)][:,:,j])
-                    self.lin.bias = torch.nn.Parameter(data=self.layers[30 + 2*(i-13)][:,:,j])
-                    self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
-                    self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
+                self.lin.weight = torch.nn.Parameter(data=self.layers[29 + 2*(i-13)][:,:,j])
+                self.lin.bias = torch.nn.Parameter(data=self.layers[30 + 2*(i-13)][:,:,j])
+                self.layers[i][:,:,j] = self.lin(self.layers[i][:,:,j])
+                self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
         return self.outputs
 
 '''
