@@ -7,3 +7,8 @@ from silky import aliens as alns
 def test_player_class():
     player = alns.Player(all)
     assert player is Player
+
+    
+    alns.iterate()
+    assert alns.high_score > 0
+    assert alns.high_turns > 0
