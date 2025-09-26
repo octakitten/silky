@@ -24,5 +24,6 @@ jobs:
     - uses: ./.github/actions/run-pytest
       with:
         name: dist/silky-*.whl
+    - run: git config --global safe.directory '*'
     - run: gh release delete latest -y --cleanup-tag
     - run: gh release create latest dist/silky-*.whl
