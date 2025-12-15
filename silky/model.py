@@ -1182,7 +1182,7 @@ class mouse():
     def permute(self, degree):
 
 '''
-    @torch.no_grad()
+@torch.no_grad()
     def update(self, input_image):
         if (torch.is_tensor(input_image) == False):
             return -1
