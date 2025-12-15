@@ -1095,6 +1095,7 @@ class hamster():
                     torch.mul(self.layers[k], torch.mul(torch.div(cons, torch.mul(torch.pow(torch.abs(self.layers[0]), .5), torch.pow(torch.abs(self.layers[k]), .5))), (1 - diff)), out=self.layers[k])
         return
 
+'''
 class mouse():
     # cuda device
     device = -1
@@ -1140,7 +1141,6 @@ class mouse():
         else:
             self.device = torch.device('cpu')
         return
-'''
     def save(self, path):
 
     def load(self, path):
@@ -1181,7 +1181,7 @@ class mouse():
 
     def permute(self, degree):
 
-'''
+
     def update(self, input_image):
         if (torch.is_tensor(input_image) == False):
             return -1
@@ -1246,7 +1246,6 @@ class mouse():
                     self.layers[i][:,:,j] = self.tanh(self.layers[i][:,:,j])
         return self.outputs
 
-'''
     def backprop(self, guess, answer, constant = None):
 
 '''
