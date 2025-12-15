@@ -3,7 +3,7 @@ name: Silky Development Wheel Release
 on: 
   push:
     branches:
-      - develop
+      - dev
 
 env:
   GH_TOKEN: ${{ github.token }}
