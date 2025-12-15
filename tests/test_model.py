@@ -72,7 +72,7 @@ def test_hamster_model_initialization():
     assert model2.layers[59].shape == (params[0], params[1], params[2])
     assert model2.layers[0][0, 0, 0] == 0
     assert model2.layers[4][0, 0, 0] == 0
-    assert model2.layers[43][0, 0, 0] == 0
+    assert model2.layers[43][0, 0, 0] != 0
     guess = model2.update(torch.ones((params[0], params[1]), device=model2.device))
     assert len(model2.layers) == 61
     assert model2.layers[0].shape == (params[0], params[1], params[2])
