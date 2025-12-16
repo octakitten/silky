@@ -3,6 +3,7 @@ import os
 import pytest
 import silky
 from silky import model as Mdl
+import torch
 
 def make_model():
     return Mdl.ferret()
