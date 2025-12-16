@@ -28,4 +28,4 @@ def test_forest_init():
     assert game.starting_y <= model_params()[1]
     assert game.width == model_params()[0]
     assert game.height == model_params()[1]
-    assert game.play_game() == True || False
+    assert game.play_game() == True or False
