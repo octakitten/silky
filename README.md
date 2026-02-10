@@ -1,5 +1,5 @@
 # Silky
-A framework for cognitive neural networks with persistent memory
+A framework for asynchronous neural networks with persistent memory
 
 **What is this?**
 
