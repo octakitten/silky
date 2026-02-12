@@ -18,4 +18,4 @@ folder="logs/"
 
 mkdir -p "$folder"
 
-.venv/bin/python3 -m ./run.py > "$folder$filename"
+python3 -m ./run.py > "$folder$filename"
