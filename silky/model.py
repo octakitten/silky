@@ -974,7 +974,7 @@ class hamster():
         # nevermind, no more kron sums. we're using nn.Linear to handle propagation instead.
         # ReLU can handle neuron activation and Tanh can handle neuron propensities.
         
-        linearpass = self.zeros(self.height, self, width, self.depth, dtype=torch.float32, device=self.device)
+        linearpass = torch.zeros(self.height, self.width, self.depth, dtype=torch.float32, device=self.device)
         for i in range(colorspace, self.depth - 1):
             with torch.no_grad():
                 self.lin.weight = torch.nn.Parameter(data=self.layers[1][:,:,i])
@@ -982,11 +982,11 @@ class hamster():
                 linearpass = self.lin(self.layers[0][:,:,i])
                 torch.add(self.layers[0][:,:,i+1], linearpass, out=self.layers[0][:,:,i+1])
                 for j in range(0, 4):
-                    torch.add(self.layers[0][:,:,i+1], torch.roll(linearpass, (-1 ** j/2), int(j/2), out=self.layers[0][:,:,i+1]))
+                    torch.add(self.layers[0][:,:,i+1], torch.roll(linearpass, (-1 ** int(j/2)), int(j/2)), out=self.layers[0][:,:,i+1])
                 self.lin.weight = torch.nn.Parameter(data=self.layers[2][:,:,i])
                 self.lin.bias = torch.nn.Parameter(data=self.layers[4][:,:,i])
                 for j in range(0, 4):
-                    torch.add(self.layers[0][:,:,i+1], torch.roll(linearpass, (-1 ** j/2), int(j/2), out=self.layers[0][:,:,i+1]))
+                    torch.add(self.layers[0][:,:,i+1], torch.roll(linearpass, (-1 ** int(j/2)), int(j/2)), out=self.layers[0][:,:,i+1])
                 self.layers[0][:,:,i+1] = self.relu(self.layers[0][:,:,i+1])
         #self.layers[0] = self.layers[0].detach()
             #torch.add(torch.add(torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 0).view(self.width, self.height), torch.sum(torch.kron(self.layers[0][:, :, i], self.layers[0][:, :, (i+1)]), 1)).view(self.width, self.height), self.layers[0][:, :, (i+1)], out=self.layers[0][:, :, (i+1)])

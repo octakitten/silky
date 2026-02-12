@@ -338,7 +338,7 @@ def run_ferret_forest():
 def run_hamster():
     iters = 0
     prev_iters = 10000
-    path = sys.path[0] + '/velvet/models'
+    path = sys.path[0] + '/hamsters'
     vic_path = path + '/victory'
     prog_path = path + '/in_progress'
     model = mdl.hamster()
