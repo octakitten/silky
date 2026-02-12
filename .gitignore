@@ -195,3 +195,5 @@ testing01/
 velvet/models/victory/
 velvet/models/in_progress/
 *.bak
+*.pth
+*.npy
