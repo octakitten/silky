@@ -436,7 +436,7 @@ def train_hamster_forest():
     total_attempts = 0
     while (True):
         total_attempts += 1
-        total_iters += run_hamster()
+        total_iters += run_hamster(True)
         if ((total_iters/total_attempts) < 5):
             break
     print("Consistency in output achieved! Average iterations per attempt is lower than 5!")
