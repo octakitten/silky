@@ -335,7 +335,7 @@ def run_ferret_forest():
         print("it was on a victory!")
     return high_score_attempt
 
-def run_hamster():
+def run_hamster(loading_required: bool):
     iters = 0
     prev_iters = 10000
     path = sys.path[0] + '/hamsters'
@@ -344,22 +344,29 @@ def run_hamster():
     model = mdl.hamster()
     params = ( 100, 100, 16, 500, 4, 3 )
     first_attempt = True
+    loading_req = True
+    loading_req = loading_required
     while (True):
         iters = 0
         prev_model = 0
         if (os.path.exists(vic_path) & first_attempt):
             try:
+                print('loading a winning model from disk... ')
                 model.load(vic_path)
-                print('loading model from disk... ')
             except:
                 print('unable to load a winning model...')
                 try:
                     model.load(prog_path)
                     print('loading an in-progress model from disk...')
                 except:
-                    print('unable to load an in-progress model')
-                    print('creating a new model...')
-                    model.create(params)
+                    if (loading_req):
+                        print('loading is required but failed')
+                        print('exiting...')
+                        break
+                    else:
+                        print('unable to load an in-progress model')
+                        print('creating a new model...')
+                        model.create(params)
         elif (os.path.exists(prog_path) & first_attempt):
             try:
               model.load(prog_path)
