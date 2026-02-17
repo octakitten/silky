@@ -758,7 +758,10 @@ class hamster():
         self.control_thresholds_neg = torch.load(path + '/control_thresholds_neg.pth')
         self.layers = []
         for i in range(0, 61):
+            if (len(self.layers) < 61):
+                self.layers.append(torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device))
             self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
+        self.lin = torch.nn.Linear(self.width * self.height, self.width * self.height, bias=True, dtype=torch.float32, device=self.device)
         return
         
     def __new_thresholds(self):

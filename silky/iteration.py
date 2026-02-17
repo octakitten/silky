@@ -353,28 +353,39 @@ def run_hamster(loading_required: bool):
             try:
                 print('loading a winning model from disk... ')
                 model.load(vic_path)
-            except:
-                print('unable to load a winning model...')
+            except FileNotFoundError:
+                print('unable to find a winning model...')
                 try:
                     model.load(prog_path)
                     print('loading an in-progress model from disk...')
-                except:
+                except FileNotFoundError:
                     if (loading_req):
                         print('loading is required but failed')
                         print('exiting...')
                         break
                     else:
-                        print('unable to load an in-progress model')
+                        print('unable to find an in-progress model')
                         print('creating a new model...')
                         model.create(params)
+                except RuntimeError:
+                    print('runtime error encountered, loading failed...')
+                    print('exiting...')
+                    break
+            except RuntimeError:
+                print('runtime error encountered, loading failed...')
+                print('exiting...')
         elif (os.path.exists(prog_path) & first_attempt):
             try:
               model.load(prog_path)
               print('loading an in-progress model from disk...')
-            except:
-                print('unable to load an in-progress model')
+            except FileNotFoundError:
+                print('unable to find an in-progress model')
                 print('creating a new model')
                 model.create(params)
+            except RuntimeError:
+                print('runtime error encountered, loading failed...')
+                print('exiting...')
+                break
         elif (first_attempt):
               print('creating a new model...')
               model.create(params)
