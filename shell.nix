@@ -15,7 +15,7 @@ in pkgs.mkShell {
     source .venv/bin/activate
     pip install hatch
     hatch build -t wheel
-    python -m run.py
+    python -m run
     '';
 }
 
