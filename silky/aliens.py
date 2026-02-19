@@ -33,7 +33,7 @@ import pygame as pg
 
 import silky
 from silky import model as model
-from silky import screen as sscreen
+from silky import screen as screen
 
 
 
@@ -477,9 +477,9 @@ def iterate():
     prev_score = 0
     done = False
 
-    mdl = model.ferret()
+    mdl = model.hamster()
     while (done == False):
-        if (os.path.exists(best_path) & first_attempt):
+        if (os.path.exists(best_path)):
             try:
                 mdl.load(best_path)
                 high_turns = np.load(best_path + '/high_turns.npy')
@@ -497,7 +497,7 @@ def iterate():
                     print("Creating new model.")
                     mdl.create(params)
                     mdl.save(latest_path)
-        elif (os.path.exists(latest_path) & first_attempt):
+        elif (os.path.exists(latest_path)):
             try:
                 print("Loading latest model.")
                 mdl.load(latest_path)
@@ -508,7 +508,7 @@ def iterate():
                 print("Creating new model.")
                 mdl.create(params)
                 mdl.save(latest_path)
-        elif (first_attempt):
+        else:
             print("Creating new model.")
             mdl.create(params)
             mdl.save(latest_path)
@@ -519,6 +519,7 @@ def iterate():
                 print("First attempt!")
                 high_turns = TURNS
                 high_score = SCORE
+                first_game_attempt = False
             else:
                 if (high_turns + high_score < turns + score):
                     print("New high score found! Saving model...")
@@ -527,15 +528,22 @@ def iterate():
                     high_turns = TURNS
                     high_score = SCORE
                     high_score_iter = total_iters
+                    mdl.save(best_path)
                     np.save(best_path + '/high_turns', high_turns)
                     np.save(best_path + '/high_score', high_score)
+                    np.save(best_path + '/high_score_iters', high_score_iters)
+                    done = True
                 elif (high_turns + high_score > turns + score):
                     print("Not a high score. Reloading...")
                     print(f"Iteration number: {total_iters}")
                     mdl.load(best_path)
+                    high_turns = np.load(best_path + '/high_turns.npy')
+                    high_score = np.load(best_path + '/high_score.npy')
+                    high_score_iters = np.load(best_path + '/high_score_iters.npy')
                 mdl.permute(1, permute_degree)
                 total_iters = total_iters + 1
     mdl.save(latest_path)
     np.save(latest_path + '/high_turns', high_turns)
     np.save(latest_path + '/high_score', high_score)
+    np.save(latest_path + '/high_score_iters', high_score_iters)
     pg.quit()
