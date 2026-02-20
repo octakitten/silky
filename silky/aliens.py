@@ -460,7 +460,7 @@ def iterate():
     global SCORE
     global TURNS
     global mdl
-    params = (640, 480, 30, 256, 6, 0)
+    params = (640, 480, 15, 256, 6, 0)
     total_iters = 0
     high_score = 0
     high_turns = 0
