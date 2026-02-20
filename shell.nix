@@ -9,6 +9,7 @@ in pkgs.mkShell {
     pkgs.python312Packages.torch
     pkgs.python312Packages.datasets
     pkgs.python312Packages.torchvision
+    pkgs.python312Packages.pygame
   ];
   shellHook = ''
     python -m venv .venv
