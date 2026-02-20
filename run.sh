@@ -18,4 +18,4 @@ folder="logs/"
 
 mkdir -p "$folder"
 
-python3 -m ./run.py > "$folder$filename"
+python3 -m ./run-aliens.py > "$folder$filename"
