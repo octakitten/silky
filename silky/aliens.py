@@ -33,7 +33,7 @@ import pygame as pg
 
 import silky
 from silky import model as model
-from silky import screen as screen
+from silky import screen
 
 
 
@@ -401,7 +401,7 @@ def play(winstyle=0):
         dirty = all.draw(screen)
         
         # show the model the game screen and have it react
-        response = mdl.update(sscreen.convert(dirty))
+        response = mdl.update(screen.convert(dirty))
 
         # create some events for the model to do things in the game with
         # add keyboard events based on the model's response

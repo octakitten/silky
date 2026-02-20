@@ -67,7 +67,6 @@ class screen():
             grey = val.convert('L')
             return torch.from_numpy(np.array(grey)).int16()
         else:
-            img = Image.convert(val, 'L')
             grey = img.convert('L')
             return torch.from_numpy(np.array(grey)).int16()
 
