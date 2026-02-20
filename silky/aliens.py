@@ -464,6 +464,8 @@ def iterate():
     total_iters = 0
     high_score = 0
     high_turns = 0
+    starting_score = 0
+    starting_turns = 0
     high_score_iter = 0
     pth = os.getcwd() + '/aliens'
     latest_path = pth + '/latest'
@@ -484,13 +486,19 @@ def iterate():
                 mdl.load(best_path)
                 high_turns = np.load(best_path + '/high_turns.npy')
                 high_score = np.load(best_path + '/high_score.npy')
+                high_score_iters = np.load(best_path + 'high_score_iters.npy')
+                starting_turns = high_turns
+                starting_score = high_score
                 print("Loading best model.")
             except:
                 print("Could not find best model.")
                 try:
                     mdl.load(latest_path)
                     high_turns = np.load(latest_path + '/high_turns.npy')
-                    high_score = np.load(lates_path + '/high_score.npy')
+                    high_score = np.load(latest_path + '/high_score.npy')
+                    high_score_iters = np.load(latest_path + '/high_score_iters.npy')
+                    starting_turns = high_turns
+                    stating_score = high_score
                     print("Loading latest model.)")
                 except:
                     print("Could not find latest model.")
@@ -502,7 +510,10 @@ def iterate():
                 print("Loading latest model.")
                 mdl.load(latest_path)
                 high_turns = np.load(latest_path + '/high_turns.npy')
-                high_score = np.load(lates_path + '/high_score.npy')
+                high_score = np.load(latest_path + '/high_score.npy')
+                high_score_iters = np.load(latest_path + '/high_score_iters.npy')
+                starting_turns = high_turns
+                starting_score = high_score
             except:
                 print("Could not load latest model.")
                 print("Creating new model.")
@@ -532,7 +543,6 @@ def iterate():
                     np.save(best_path + '/high_turns', high_turns)
                     np.save(best_path + '/high_score', high_score)
                     np.save(best_path + '/high_score_iters', high_score_iters)
-                    done = True
                 elif (high_turns + high_score > turns + score):
                     print("Not a high score. Reloading...")
                     print(f"Iteration number: {total_iters}")
@@ -542,6 +552,13 @@ def iterate():
                     high_score_iters = np.load(best_path + '/high_score_iters.npy')
                 mdl.permute(1, permute_degree)
                 total_iters = total_iters + 1
+            if ((high_turns + high_score) > (starting_turns + starting_score + 100)):
+                done = True
+            elif (total_iters - high_score_iters > 100):
+                mdl.save(latest_path)
+                np.save(latest_path + '/high_turns', high_turns)
+                np.save(latest_path + '/high_score', high_score)
+                np.save(latest_path + '/high_score_iters', high_score_iters)
     mdl.save(latest_path)
     np.save(latest_path + '/high_turns', high_turns)
     np.save(latest_path + '/high_score', high_score)
