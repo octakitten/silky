@@ -689,7 +689,7 @@ class hamster():
         print('new personality')
         self.__new_sensations()
         print('new sensations')
-        self.lin = torch.nn.Linear(self.width * self.height, self.depth, bias=True, dtype=torch.float32, device=self.device)
+        self.lin = torch.nn.Linear(in_features=self.width, out_features=self.height, bias=True, dtype=torch.float32, device=self.device)
 
         return
 
@@ -761,7 +761,7 @@ class hamster():
             if (len(self.layers) < 61):
                 self.layers.append(torch.zeros(size=(self.width, self.height, self.depth), dtype=torch.float32, device=self.device))
             self.layers[i] = torch.load(path + '/layer' + str(i) + '.pth')
-        self.lin = torch.nn.Linear(self.width * self.height, self.depth, bias=True, dtype=torch.float32, device=self.device)
+        self.lin = torch.nn.Linear(self.width, self.height, bias=True, dtype=torch.float32, device=self.device)
         return
         
     def __new_thresholds(self):
@@ -939,6 +939,7 @@ class hamster():
 
         
     def update(self, input_image):
+        print("reached the update function")
         if (torch.is_tensor(input_image) == False):
             return -1
         # add in the input image

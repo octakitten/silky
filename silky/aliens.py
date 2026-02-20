@@ -25,6 +25,7 @@ Controls
 import os
 import random
 from typing import List
+from io import BytesIO
 
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
@@ -58,7 +59,7 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
 pg.display.init()
-screen = pg.display.set_mode((1, 1))
+screen = pg.display.set_mode(size=(640, 480), flags=pg.HIDDEN)
 
 def load_image(file):
     """loads an image, prepares it for play"""
@@ -399,9 +400,12 @@ def play(winstyle=0):
 
         # draw the scene
         dirty = all.draw(screen)
+
+        buffer = BytesIO()
+        pg.image.save(screen, buffer)
         
         # show the model the game screen and have it react
-        response = mdl.update(screen.convert(dirty))
+        response = mdl.update(silky.screen.convert_greyscale(buffer))
 
         # create some events for the model to do things in the game with
         # add keyboard events based on the model's response
@@ -460,7 +464,7 @@ def iterate():
     global SCORE
     global TURNS
     global mdl
-    params = (640, 480, 9, 256, 6, 0)
+    params = (640, 640, 30, 256, 6, 0)
     total_iters = 0
     high_score = 0
     high_turns = 0
