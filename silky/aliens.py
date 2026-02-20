@@ -470,7 +470,7 @@ def iterate():
     high_turns = 0
     starting_score = 0
     starting_turns = 0
-    high_score_iter = 0
+    high_score_iters = 0
     pth = os.getcwd() + '/aliens'
     latest_path = pth + '/latest'
     best_path = pth + '/best'
@@ -542,7 +542,7 @@ def iterate():
                     mdl.save(best_path)
                     high_turns = TURNS
                     high_score = SCORE
-                    high_score_iter = total_iters
+                    high_score_iters = total_iters
                     mdl.save(best_path)
                     np.save(best_path + '/high_turns', high_turns)
                     np.save(best_path + '/high_score', high_score)
