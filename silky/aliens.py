@@ -26,6 +26,7 @@ import os
 import random
 from typing import List
 from io import BytesIO
+import numpy as np
 
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
