@@ -66,7 +66,7 @@ class forest():
         self.__create_starting_screen()
         self.__create_victory_condition()
         self.__choose_starting_location()
-        screen.screen.save(self.game_screen, 'start_screen')
+        screen.save(self.game_screen, 'start_screen')
         return
     
     def __create_victory_condition(self):
