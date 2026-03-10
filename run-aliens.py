@@ -1,4 +1,4 @@
 import silky
-from silky import aliens
+from silky import iteration
 
-silky.aliens.iterate()
+silky.iteration.iterate_ferret_aliens()

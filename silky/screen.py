@@ -57,21 +57,21 @@ def convert_greyscale(val):
     # then convert the greyscale image to a pytorch tensor
     # and return the tensor
     if (isinstance(val, np.ndarray) == True):
-        print('found an ndarray')
+        #print('found an ndarray')
         img = Image.fromarray(val)
         grey = img.convert('L')
         out = torch.from_numpy(np.array(grey)).to(torch.float32)
     elif (torch.is_tensor(val) == True):
-        print('found a torch tensor')
+        #print('found a torch tensor')
         grey = val.convert('L')
         out = torch.from_numpy(np.array(grey)).to(torch.float32)
     elif (isinstance(val, BytesIO) == True):
-        print('found an image buffer')
+        #print('found an image buffer')
         grey = Image.new('L', (1,1), 'red')
         grey.save(val, format='png')
         out = torch.from_numpy(np.array(grey)).to(torch.float32)
     else:
-        print('found an image')
+        #print('found an image')
         img = Image.open(val)
         grey = img.convert('L')
         out = torch.from_numpy(np.array(grey)).to(torch.float32)

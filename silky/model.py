@@ -939,7 +939,7 @@ class hamster():
 
         
     def update(self, input_image):
-        print("reached the update function")
+        #print("reached the update function")
         if (torch.is_tensor(input_image) == False):
             return -1
         # add in the input image

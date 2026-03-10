@@ -8,6 +8,7 @@ import os
 from . import model as mdl
 from . import forest
 from . import game as gm
+from . import aliens as aln
 
 from silky import train as tr
 
@@ -556,24 +557,19 @@ def run_ferret_forest_tracked():
             break
 
 def iterate_ferret_aliens():
-    params = (640, 480, 20, 256, 6, 0)
-    total_iters = 0
-    high_score = 0
-    high_turns = 0
-    high_score_iter = 0
-    pth = os.getcwd() + '/aliens'
-    latest_path = pth + '/latest'
-    best_path = pth + '/best'
-    permute_degree = 2
-
-    first_attempt = True
-    turns = 0
-    score = 0
-    prev_turns = 0
-    prev_score = 0
-    done = False
-
-    #mdl = silky.model.ferret()
-    #while (!done):
-        #if (os.path.exists(best_path) & first_attempt):
-            #try:
+    latest_path = os.getcwd() + '/aliens/latest'
+    victory_path = os.getcwd() + '/aliens/best'
+    counter = 0
+    while True:
+        aln.iterate()
+        counter += 1
+        if (counter % 100 == 0):
+            counter = 0
+            if (os.path.exists(victory_path)):
+                high_turns = np.load(victory_path + '/high_turns.npy')
+                print("Best high turns so far: " + high_turns)
+                high_score = np.load(victory_path)
+                print("Best high score so far: " + '/high_score.npy')
+                if (high_score <= 10000):
+                    break
+    print("Reached a high score of at least 10000! Taking a break now...")
