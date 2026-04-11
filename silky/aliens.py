@@ -551,10 +551,20 @@ def iterate():
                 elif (high_turns + high_score > turns + score):
                     print("Not a high score. Reloading...")
                     print(f"Iteration number: {total_iters}")
-                    mdl.load(best_path)
-                    high_turns = np.load(best_path + '/high_turns.npy')
-                    high_score = np.load(best_path + '/high_score.npy')
-                    high_score_iters = np.load(best_path + '/high_score_iters.npy')
+                    try:
+                        mdl.load(best_path)
+                        high_turns = np.load(best_path + '/high_turns.npy')
+                        high_score = np.load(best_path + '/high_score.npy')
+                        high_score_iters = np.load(best_path + '/high_score_iters.npy')
+                    except:
+                        try:
+                            mdl.load(latest_path)
+                            high_turns = np.load(best_path + '/high_turns.npy')
+                            high_score = np.load(best_path + '/high_score.npy')
+                            high_score_iters = np.load(best_path + '/high_score_iters.npy')
+                        except:
+                            pass
+                            # do nothing, we already have a model, and there's no other model to get, so we'll just save it after this
                 mdl.permute(1, permute_degree)
                 total_iters = total_iters + 1
             if ((high_turns + high_score) > (starting_turns + starting_score + 100)):

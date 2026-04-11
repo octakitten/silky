@@ -51,15 +51,19 @@ class ferret():
     def __init__(self):
         if torch.cuda.is_available():
             self.device = torch.device('cuda')
+            print('Using cuda capability')
         else:
             self.device = torch.device('cpu')
+            print('Using cpu capability')
         return
 
     def __check_cuda(self):
         if torch.cuda.is_available():
             self.device = torch.device('cuda')
+            print('Using cuda capability')
         else:
             self.device = torch.device('cpu')
+            print('Using cpu capability')
         return
 
     def save(self, path):
@@ -406,10 +410,10 @@ class ferret():
         input_tensor = torch.clone(input_image, ).detach().to(dtype=torch.int16, device=self.device)
 
 
-        if input_tensor.ndim == 3:
+        if input_tensor.ndim == 3 and self.depth > 4:
             torch.add(self.layers[0][:, :, 0],  input_tensor[0,:,:], out=self.layers[0][:, :, 0])
-            torch.add(self.layers[0][:, :, 1],  input_tensor[1,:,:], out=self.layers[0][:, :, 1])
-            torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 2])
+            torch.add(self.layers[0][:, :, 1],  input_tensor[1,:,:], out=self.layers[0][:, :, 2])
+            torch.add(self.layers[0][:, :, 2],  input_tensor[2,:,:], out=self.layers[0][:, :, 4])
         elif input_tensor.ndim == 2:
             torch.add(self.layers[0][:, :, 0],  input_tensor, out=self.layers[0][:, :, 0])
             print(self.layers[0][:, :, 0].size())
@@ -655,8 +659,10 @@ class hamster():
     def __check_cuda(self):
         if torch.cuda.is_available():
             self.device = torch.device('cuda')
+            print('Using cuda capability')
         else:
             self.device = torch.device('cpu')
+            print('Using cpu capability')
         return
 
 

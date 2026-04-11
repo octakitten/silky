@@ -16,7 +16,15 @@ in pkgs.mkShell {
     source .venv/bin/activate
     pip install hatch
     hatch build -t wheel
-    python -m run-aliens
+    today=$( date +%s )
+    num=1
+    filename=$today-log.txt
+    while [ -e "$filename" ]; do
+      filename='$s-$01d-log.txt'"$today""$(( ++num ))"
+    done
+    folder="logs/"
+    mkdir -p "$folder"
+    python -m run-aliens > "$folder$filename" &
     '';
 }
 
