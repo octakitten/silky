@@ -563,11 +563,11 @@ def iterate():
                             high_score = np.load(best_path + '/high_score.npy')
                             high_score_iters = np.load(best_path + '/high_score_iters.npy')
                         except:
-                            pass
+                            #pass
                             # do nothing, we already have a model, and there's no other model to get, so we'll just save it after this
                 mdl.permute(1, permute_degree)
                 total_iters = total_iters + 1
-            if ((high_turns + high_score) > (starting_turns + starting_score + 100)):
+            if ((high_turns + high_score) > (starting_turns + starting_score + 1000)):
                 done = True
             elif (total_iters - high_score_iters > 100):
                 mdl.save(latest_path)

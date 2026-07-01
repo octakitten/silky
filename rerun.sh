@@ -7,7 +7,7 @@ echo  "Building Silky package"
 FOLDER="dist/"
 rm -f $FOLDER*.whl
 rm -f $FOLDER*.tar.gz
-.venv/bin/python3 -m hatch build -t wheel $FOLDER
+.venv/bin/python3 -m hatch build -t wheel $FOLDER 
 echo "Built package!"
 
 ## install the package
@@ -24,4 +24,4 @@ while [ -e "$folder$filename" ]; do
 	printf -v filename '%s-%01d-log.txt' "$today" "$(( ++num ))"
 done
 echo 'Printing to logfile "%s"' "$filename"
-.venv/bin/python3 -m run > "$folder$filename"
+.venv/bin/python3 -m run-aliens 2>&1 | tee -a "$folder$filename"
