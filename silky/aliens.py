@@ -656,6 +656,7 @@ def iterate_on_device():
         best_mdl.create(params)
         first_game_attempt = True
         while (done == False):
+            print("Playing the game...")
             play()
             if (first_game_attempt):
                 print("First attempt!")
