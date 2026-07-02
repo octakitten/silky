@@ -533,14 +533,18 @@ def iterate():
             play()
             if (first_game_attempt):
                 print("First attempt!")
+                first_game_attempt = False
                 high_turns = TURNS
                 high_score = SCORE
-                first_game_attempt = False
+                high_score_iters = total_iters
+                mdl.save(best_path)
+                np.save(best_path + '/high_turns', high_turns)
+                np.save(best_path + '/high_score', high_score)
+                np.save(best_path + '/high_score_iters', high_score_iters)
             else:
                 if (high_turns + high_score < turns + score):
                     print("New high score found! Saving model...")
                     print(f"Iteration number: {total_iters}")
-                    mdl.save(best_path)
                     high_turns = TURNS
                     high_score = SCORE
                     high_score_iters = total_iters
@@ -559,13 +563,13 @@ def iterate():
                     except:
                         try:
                             mdl.load(latest_path)
-                            high_turns = np.load(best_path + '/high_turns.npy')
-                            high_score = np.load(best_path + '/high_score.npy')
-                            high_score_iters = np.load(best_path + '/high_score_iters.npy')
+                            high_turns = np.load(latest_path + '/high_turns.npy')
+                            high_score = np.load(latest_path + '/high_score.npy')
+                            high_score_iters = np.load(latest_path + '/high_score_iters.npy')
                         except:
                             donothing = 0
                             # do nothing, we already have a model, and there's no other model to get, so we'll just save it after this
-                mdl.permute(1, permute_degree)
+                mdl.permute(permute_degree)
                 total_iters = total_iters + 1
             if ((high_turns + high_score) > (starting_turns + starting_score + 1000)):
                 done = True

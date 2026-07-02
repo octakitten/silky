@@ -24,6 +24,7 @@ echo "Building the Silky package..."
 FOLDER="dist/"
 rm -f $FOLDER*.whl
 rm -f $FOLDER*.tar.gz
+.venv/bin/pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
 .venv/bin/python3 -m hatch build -t wheel $FOLDER
 
 echo "Built package in folder dist/"

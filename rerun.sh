@@ -24,4 +24,4 @@ while [ -e "$folder$filename" ]; do
 	printf -v filename '%s-%01d-log.txt' "$today" "$(( ++num ))"
 done
 echo 'Printing to logfile "%s"' "$filename"
-.venv/bin/python3 -m run-aliens 2>&1 | tee -a "$folder$filename"
+.venv/bin/python3 -m run-aliens | tee -a "$folder$filename"
