@@ -542,7 +542,7 @@ def iterate():
                 np.save(best_path + '/high_score', high_score)
                 np.save(best_path + '/high_score_iters', high_score_iters)
             else:
-                if (high_turns + high_score < turns + score):
+                if ((high_turns + high_score) < (turns + score)):
                     print("New high score found! Saving model...")
                     print(f"Iteration number: {total_iters}")
                     high_turns = TURNS
@@ -552,7 +552,7 @@ def iterate():
                     np.save(best_path + '/high_turns', high_turns)
                     np.save(best_path + '/high_score', high_score)
                     np.save(best_path + '/high_score_iters', high_score_iters)
-                elif (high_turns + high_score > turns + score):
+                elif ((high_turns + high_score) > (turns + score)):
                     print("Not a high score. Reloading...")
                     print(f"Iteration number: {total_iters}")
                     try:
@@ -653,6 +653,7 @@ def iterate_on_device():
             print("Creating new model.")
             mdl.create(params)
             mdl.save(latest_path)
+        best_mdl.create(params)
         first_game_attempt = True
         while (done == False):
             play()
@@ -664,27 +665,30 @@ def iterate_on_device():
                 high_score_iters = total_iters
                 best_mdl.copy(mdl)
             else:
-                if (high_turns + high_score < turns + score):
+                if ((high_turns + high_score) < (turns + score)):
                     print("New high score found! Saving model...")
                     print(f"Iteration number: {total_iters}")
                     high_turns = TURNS
                     high_score = SCORE
                     high_score_iters = total_iters
                     best_mdl.copy(mdl)
-                elif (high_turns + high_score > turns + score):
+                elif ((high_turns + high_score) >= (turns + score)):
                     print("Not a high score. Reloading...")
                     print(f"Iteration number: {total_iters}")
                     mdl.copy(best_mdl)
+                print("Permuting model")
                 mdl.permute(permute_degree)
                 total_iters = total_iters + 1
             if ((high_turns + high_score) > (starting_turns + starting_score + 1000)):
                 done = True
+                print("Done!")
                 mdl.save(best_path)
                 np.save(best_path + '/high_turns', high_turns)
                 np.save(best_path + '/high_score', high_score)
                 np.save(best_path + '/high_score_iters', high_score_iters)
             elif (total_iters % 100 == 0):
-                mdl.save(latest_path)
+                print("Saving to disk...")
+                best_mdl.save(latest_path)
                 np.save(latest_path + '/high_turns', high_turns)
                 np.save(latest_path + '/high_score', high_score)
                 np.save(latest_path + '/high_score_iters', high_score_iters)
