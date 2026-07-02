@@ -583,3 +583,113 @@ def iterate():
     np.save(latest_path + '/high_score', high_score)
     np.save(latest_path + '/high_score_iters', high_score_iters)
     pg.quit()
+
+
+def iterate_on_device():
+    global SCORE
+    global TURNS
+    global mdl
+    params = (640, 640, 30, 256, 6, 0)
+    total_iters = 0
+    high_score = 0
+    high_turns = 0
+    starting_score = 0
+    starting_turns = 0
+    high_score_iters = 0
+    pth = os.getcwd() + '/aliens'
+    latest_path = pth + '/latest'
+    best_path = pth + '/best'
+    permute_degree = 2
+    
+    first_attempt = True
+    turns = 0
+    score = 0
+    prev_turns = 0
+    prev_score = 0
+    done = False
+
+    mdl = model.hamster()
+    best_mdl = model.hamster()
+    while (done == False):
+        if (os.path.exists(best_path)):
+            try:
+                mdl.load(best_path)
+                high_turns = np.load(best_path + '/high_turns.npy')
+                high_score = np.load(best_path + '/high_score.npy')
+                high_score_iters = np.load(best_path + 'high_score_iters.npy')
+                starting_turns = high_turns
+                starting_score = high_score
+                print("Loading best model.")
+            except:
+                print("Could not find best model.")
+                try:
+                    mdl.load(latest_path)
+                    high_turns = np.load(latest_path + '/high_turns.npy')
+                    high_score = np.load(latest_path + '/high_score.npy')
+                    high_score_iters = np.load(latest_path + '/high_score_iters.npy')
+                    starting_turns = high_turns
+                    stating_score = high_score
+                    print("Loading latest model.")
+                except:
+                    print("Could not find latest model.")
+                    print("Creating new model.")
+                    mdl.create(params)
+                    mdl.save(latest_path)
+        elif (os.path.exists(latest_path)):
+            try:
+                print("Loading latest model.")
+                mdl.load(latest_path)
+                high_turns = np.load(latest_path + '/high_turns.npy')
+                high_score = np.load(latest_path + '/high_score.npy')
+                high_score_iters = np.load(latest_path + '/high_score_iters.npy')
+                starting_turns = high_turns
+                starting_score = high_score
+            except:
+                print("Could not load latest model.")
+                print("Creating new model.")
+                mdl.create(params)
+                mdl.save(latest_path)
+        else:
+            print("Creating new model.")
+            mdl.create(params)
+            mdl.save(latest_path)
+        first_game_attempt = True
+        while (done == False):
+            play()
+            if (first_game_attempt):
+                print("First attempt!")
+                first_game_attempt = False
+                high_turns = TURNS
+                high_score = SCORE
+                high_score_iters = total_iters
+                best_mdl.copy(mdl)
+            else:
+                if (high_turns + high_score < turns + score):
+                    print("New high score found! Saving model...")
+                    print(f"Iteration number: {total_iters}")
+                    high_turns = TURNS
+                    high_score = SCORE
+                    high_score_iters = total_iters
+                    best_mdl.copy(mdl)
+                elif (high_turns + high_score > turns + score):
+                    print("Not a high score. Reloading...")
+                    print(f"Iteration number: {total_iters}")
+                    mdl.copy(best_mdl)
+                mdl.permute(permute_degree)
+                total_iters = total_iters + 1
+            if ((high_turns + high_score) > (starting_turns + starting_score + 1000)):
+                done = True
+                mdl.save(best_path)
+                np.save(best_path + '/high_turns', high_turns)
+                np.save(best_path + '/high_score', high_score)
+                np.save(best_path + '/high_score_iters', high_score_iters)
+            elif (total_iters % 100 == 0):
+                mdl.save(latest_path)
+                np.save(latest_path + '/high_turns', high_turns)
+                np.save(latest_path + '/high_score', high_score)
+                np.save(latest_path + '/high_score_iters', high_score_iters)
+    mdl.save(latest_path)
+    np.save(latest_path + '/high_turns', high_turns)
+    np.save(latest_path + '/high_score', high_score)
+    np.save(latest_path + '/high_score_iters', high_score_iters)
+    pg.quit()
