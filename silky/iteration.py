@@ -561,7 +561,7 @@ def iterate_ferret_aliens():
     victory_path = os.getcwd() + '/aliens/best'
     counter = 0
     while True:
-        aln.iterate()
+        aln.iterate_on_device()
         counter += 1
         if (counter % 100 == 0):
             counter = 0
