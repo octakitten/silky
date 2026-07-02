@@ -504,7 +504,7 @@ def iterate():
                     high_score_iters = np.load(latest_path + '/high_score_iters.npy')
                     starting_turns = high_turns
                     stating_score = high_score
-                    print("Loading latest model.)")
+                    print("Loading latest model.")
                 except:
                     print("Could not find latest model.")
                     print("Creating new model.")
