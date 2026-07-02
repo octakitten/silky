@@ -72,7 +72,7 @@ class forest():
     def __create_victory_condition(self):
         self.__choose_victory_location()
         self.game_screen[self.victory_x,self.victory_y] = self.flag
-        screen.screen.save(self.game_screen, 'victory_condition')
+        screen.save(self.game_screen, 'victory_condition')
         return
     
     def __loss_condition(self):

@@ -99,4 +99,4 @@ def test_hamster_model_initialization():
     params3 = init_params2()
     model3.create(params3)
     model2.copy(model3)
-    assert model2.width == params2[0]
+    assert model2.width == params3[0]
