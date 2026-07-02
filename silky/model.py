@@ -839,8 +839,8 @@ class hamster():
         self.bounds = model.bounds
         self.num_controls = model.num_controls
         self.controls = model.controls
-        self.control_thresholds_pos = model.thresholds_pos
-        self.control_thresholds_neg = model.thresholds_neg
+        self.control_thresholds_pos = model.control_thresholds_pos
+        self.control_thresholds_neg = model.control_thresholds_neg
         self.num_sensations = model.num_sensations
         self.pos_propensity = model.pos_propensity
         self.neg_propensity = model.neg_propensity

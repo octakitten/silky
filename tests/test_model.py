@@ -21,6 +21,16 @@ def init_params():
         2
         )
 
+def init_params2():
+    return (
+        5,
+        5,
+        12,
+        256,
+        6,
+        2
+        )
+
 def test_ferret_model_initialization():
     model = Mdl.ferret()
     assert model is not None
@@ -85,3 +95,8 @@ def test_hamster_model_initialization():
     assert model2.layers[0].shape == (params[0], params[1], params[2])
     assert model2.layers[5].shape == (params[0], params[1], params[2])
     assert model2.layers[52].shape == (params[0], params[1], params[2])
+    model3 = Mdl.hamster()
+    params3 = init_params2()
+    model3.create(params3)
+    model2.copy(model3)
+    assert model2.width == params2[0]
