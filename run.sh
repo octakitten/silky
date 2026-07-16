@@ -1,5 +1,5 @@
 #!/bin/bash
-#build.sh
+#run.sh
 
 
 
@@ -18,4 +18,4 @@ folder="logs/"
 
 mkdir -p "$folder"
 
-python3 -m run-aliens.py > "$folder$filename" &
+python3 -m run-aliens.py > "$folder$filename" 2>&1 & disown
